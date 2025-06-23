@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 interface User {
   id: string;
   email: string;
-  role: 'vendor' | 'public';
+  role: 'vendor' | 'customer';
   businessName?: string;
   contactPerson?: string;
   phone?: string;
@@ -37,11 +37,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Simulate API call - replace with actual authentication
-    if (email === 'vendor@example.com' && password === 'vendor123') {
+    // Vendor login
+    if (email === 'n.v.saikumar9@gmail.com' && password === '7095770758') {
       const vendorUser = { 
         id: '1', 
-        email: 'vendor@example.com', 
+        email: 'n.v.saikumar9@gmail.com', 
         role: 'vendor' as const,
         businessName: '',
         contactPerson: '',
@@ -52,13 +52,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
       setUser(vendorUser);
       localStorage.setItem('user', JSON.stringify(vendorUser));
+    } 
+    // Customer login (demo customer)
+    else if (email === 'customer@example.com' && password === 'customer123') {
+      const customerUser = { 
+        id: '2', 
+        email: 'customer@example.com', 
+        role: 'customer' as const
+      };
+      setUser(customerUser);
+      localStorage.setItem('user', JSON.stringify(customerUser));
     } else {
       throw new Error('Invalid credentials');
     }
   };
 
   const updateVendorDetails = (details: Partial<User>) => {
-    if (user) {
+    if (user && user.role === 'vendor') {
       const updatedUser = { ...user, ...details };
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));

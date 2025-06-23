@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductViewer3D } from './ProductViewer3D';
+import { useAuth } from './AuthProvider';
 import { ShoppingCart, Eye, Phone, MapPin, Globe, User, Building } from 'lucide-react';
 
 interface Product {
@@ -13,26 +14,19 @@ interface Product {
   images: string[];
 }
 
-interface VendorInfo {
-  businessName: string;
-  contactPerson: string;
-  phone: string;
-  address: string;
-  website: string;
-  description: string;
-}
-
 export const PublicStorefront = () => {
+  const { user } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [cart, setCart] = useState<Product[]>([]);
   
-  // Sample vendor information - in real app, this would come from the authenticated vendor
-  const vendorInfo: VendorInfo = {
-    businessName: "Tech Gadgets Store",
-    contactPerson: "John Smith",
-    phone: "+1 (555) 123-4567",
-    address: "123 Business Street, Tech City, TC 12345",
-    website: "www.techgadgets.com",
-    description: "Your trusted partner for premium technology products. We specialize in cutting-edge gadgets and electronics with a focus on quality and customer satisfaction."
+  // Get vendor info from authenticated vendor user or use defaults
+  const vendorInfo = {
+    businessName: user?.businessName || "Tech Gadgets Store",
+    contactPerson: user?.contactPerson || "Vendor Contact",
+    phone: user?.phone || "+91 70957 70758",
+    address: user?.address || "Business Address, India",
+    website: user?.website || "www.example.com",
+    description: user?.description || "Quality products and services for all your needs."
   };
   
   const products: Product[] = [
@@ -40,24 +34,34 @@ export const PublicStorefront = () => {
       id: '1',
       name: 'Premium Smartphone',
       description: 'Latest flagship smartphone with advanced camera system and 5G connectivity. Experience the future of mobile technology.',
-      price: 899.99,
+      price: 89999,
       images: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg', '/placeholder.svg']
     },
     {
       id: '2',
       name: 'Gaming Laptop Pro',
       description: 'High-performance gaming laptop with RTX graphics and 144Hz display. Built for serious gamers and content creators.',
-      price: 1499.99,
+      price: 149999,
       images: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg']
     },
     {
       id: '3',
       name: 'Wireless Headphones',
       description: 'Premium noise-canceling headphones with 30-hour battery life. Crystal clear sound for music and calls.',
-      price: 299.99,
+      price: 29999,
       images: ['/placeholder.svg', '/placeholder.svg']
     }
   ];
+
+  const addToCart = (product: Product) => {
+    setCart([...cart, product]);
+  };
+
+  const contactSeller = () => {
+    if (vendorInfo.phone) {
+      window.open(`tel:${vendorInfo.phone}`, '_blank');
+    }
+  };
 
   if (selectedProduct) {
     return (
@@ -84,8 +88,8 @@ export const PublicStorefront = () => {
                 <div className="space-y-4">
                   <div>
                     <h1 className="text-3xl font-bold mb-2 text-gray-800">{selectedProduct.name}</h1>
-                    <p className="text-4xl font-bold gradient-primary bg-clip-text text-transparent">
-                      ${selectedProduct.price.toFixed(2)}
+                    <p className="text-4xl font-bold gradient-price bg-clip-text text-transparent">
+                      ₹{selectedProduct.price.toLocaleString('en-IN')}
                     </p>
                   </div>
                   
@@ -95,7 +99,11 @@ export const PublicStorefront = () => {
                   </div>
                   
                   <div className="space-y-3 pt-4">
-                    <Button className="w-full gradient-primary hover:opacity-90 text-white" size="lg">
+                    <Button 
+                      className="w-full gradient-primary hover:opacity-90 text-white" 
+                      size="lg"
+                      onClick={() => addToCart(selectedProduct)}
+                    >
                       <ShoppingCart className="h-5 w-5 mr-2" />
                       Add to Cart
                     </Button>
@@ -173,12 +181,27 @@ export const PublicStorefront = () => {
                     variant="outline" 
                     className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
                     size="lg"
+                    onClick={contactSeller}
                   >
                     Contact Seller
                   </Button>
                 </div>
               </CardContent>
             </Card>
+
+            {cart.length > 0 && (
+              <Card className="gradient-card border-0 shadow-lg">
+                <CardContent className="p-4">
+                  <h3 className="font-semibold mb-2">Cart ({cart.length} items)</h3>
+                  <Button 
+                    className="w-full gradient-secondary hover:opacity-90 text-white"
+                    onClick={contactSeller}
+                  >
+                    Contact Seller to Purchase
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
@@ -195,6 +218,12 @@ export const PublicStorefront = () => {
           Explore our products in stunning 3D detail. Rotate, zoom, and interact with each item for an immersive shopping experience.
         </p>
       </div>
+
+      {cart.length > 0 && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+          Cart: {cart.length} items added. Contact seller to complete purchase.
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product) => (
@@ -227,8 +256,8 @@ export const PublicStorefront = () => {
                 <h3 className="font-bold text-xl mb-3 text-gray-800">{product.name}</h3>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold gradient-secondary bg-clip-text text-transparent">
-                    ${product.price.toFixed(2)}
+                  <span className="text-3xl font-bold gradient-price bg-clip-text text-transparent">
+                    ₹{product.price.toLocaleString('en-IN')}
                   </span>
                   <Button
                     size="sm"

@@ -35,7 +35,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab 
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                       activeTab === tab.id
-                        ? 'bg-white bg-opacity-20 text-white border border-white border-opacity-30'
+                        ? 'gradient-yellow text-gray-800 border border-yellow-400'
                         : 'text-white text-opacity-80 hover:text-white hover:bg-white hover:bg-opacity-10'
                     }`}
                   >

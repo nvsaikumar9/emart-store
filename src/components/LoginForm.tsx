@@ -6,7 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lock, Mail, ShoppingBag } from 'lucide-react';
 
-export const LoginForm = () => {
+interface LoginFormProps {
+  userType?: 'vendor' | 'customer';
+}
+
+export const LoginForm: React.FC<LoginFormProps> = ({ userType = 'vendor' }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -37,7 +41,9 @@ export const LoginForm = () => {
           <CardTitle className="text-3xl font-bold text-gray-800 mb-2">
             3D Product Showcase
           </CardTitle>
-          <p className="text-gray-600">Sign in to manage your products</p>
+          <p className="text-gray-600">
+            {userType === 'vendor' ? 'Sign in to manage your products' : 'Sign in to access storefront'}
+          </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -80,11 +86,6 @@ export const LoginForm = () => {
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-          <div className="mt-8 text-center text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
-            <p className="font-medium mb-2">Demo credentials:</p>
-            <p>Email: vendor@example.com</p>
-            <p>Password: vendor123</p>
-          </div>
         </CardContent>
       </Card>
     </div>
