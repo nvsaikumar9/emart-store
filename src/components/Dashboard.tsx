@@ -76,8 +76,8 @@ export const Dashboard = () => {
               {[
                 { action: 'New product "Smartphone 360°" created', time: '2 hours ago' },
                 { action: 'Product "Laptop Pro" updated', time: '4 hours ago' },
-                { action: 'Subscription renewed successfully', time: '1 day ago' },
-                { action: 'New customer viewed "Gaming Chair"', time: '1 day ago' },
+                { action: 'Product "Gaming Chair" published', time: '1 day ago' },
+                { action: 'New customer viewed "Wireless Headphones"', time: '1 day ago' },
               ].map((activity, index) => (
                 <div key={index} className="flex justify-between items-center py-2 border-b last:border-b-0">
                   <span className="text-sm">{activity.action}</span>
@@ -90,33 +90,31 @@ export const Dashboard = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Subscription Status</CardTitle>
+            <CardTitle>Business Overview</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="font-medium">Current Plan</span>
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                  {user?.subscription_tier || 'Pro'}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Status</span>
+                <span className="font-medium">Store Status</span>
                 <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
                   Active
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="font-medium">Next Billing</span>
-                <span className="text-sm text-gray-600">Jan 15, 2024</span>
+                <span className="font-medium">Products Published</span>
+                <span className="text-sm text-gray-600">12 items</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="font-medium">Store Views</span>
+                <span className="text-sm text-gray-600">8,429 this month</span>
               </div>
               <div className="pt-4">
-                <div className="text-sm text-gray-600 mb-2">Plan Features:</div>
+                <div className="text-sm text-gray-600 mb-2">Platform Features:</div>
                 <ul className="text-sm space-y-1">
                   <li>✓ Unlimited Products</li>
                   <li>✓ 3D/360° Viewer</li>
                   <li>✓ Analytics Dashboard</li>
-                  <li>✓ Priority Support</li>
+                  <li>✓ Public Storefront</li>
                 </ul>
               </div>
             </div>
