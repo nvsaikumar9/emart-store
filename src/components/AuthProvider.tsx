@@ -4,9 +4,13 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 interface User {
   id: string;
   email: string;
-  role: 'admin' | 'vendor';
-  subscription_tier?: string;
-  subscription_active?: boolean;
+  role: 'vendor' | 'public';
+  businessName?: string;
+  contactPerson?: string;
+  phone?: string;
+  address?: string;
+  website?: string;
+  description?: string;
 }
 
 interface AuthContextType {
@@ -14,6 +18,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
+  updateVendorDetails: (details: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,26 +38,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     // Simulate API call - replace with actual authentication
-    if (email === 'admin@example.com' && password === 'admin123') {
-      const adminUser = { 
-        id: '1', 
-        email: 'admin@example.com', 
-        role: 'admin' as const 
-      };
-      setUser(adminUser);
-      localStorage.setItem('user', JSON.stringify(adminUser));
-    } else if (email === 'vendor@example.com' && password === 'vendor123') {
+    if (email === 'vendor@example.com' && password === 'vendor123') {
       const vendorUser = { 
-        id: '2', 
+        id: '1', 
         email: 'vendor@example.com', 
         role: 'vendor' as const,
-        subscription_tier: 'Pro',
-        subscription_active: true
+        businessName: '',
+        contactPerson: '',
+        phone: '',
+        address: '',
+        website: '',
+        description: ''
       };
       setUser(vendorUser);
       localStorage.setItem('user', JSON.stringify(vendorUser));
     } else {
       throw new Error('Invalid credentials');
+    }
+  };
+
+  const updateVendorDetails = (details: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...details };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
     }
   };
 
@@ -62,7 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, updateVendorDetails }}>
       {children}
     </AuthContext.Provider>
   );
