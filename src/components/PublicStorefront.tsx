@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductViewer3D } from './ProductViewer3D';
 import { useAuth } from './AuthProvider';
-import { ShoppingCart, Eye, Phone, MapPin, Globe, User, Building } from 'lucide-react';
+import { Eye, Phone, MapPin, Globe, User, Building } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -17,7 +17,6 @@ interface Product {
 export const PublicStorefront = () => {
   const { user } = useAuth();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [cart, setCart] = useState<Product[]>([]);
   
   // Get vendor info from authenticated vendor user or use defaults
   const vendorInfo = {
@@ -53,10 +52,6 @@ export const PublicStorefront = () => {
     }
   ];
 
-  const addToCart = (product: Product) => {
-    setCart([...cart, product]);
-  };
-
   const contactSeller = () => {
     if (vendorInfo.phone) {
       window.open(`tel:${vendorInfo.phone}`, '_blank');
@@ -69,7 +64,7 @@ export const PublicStorefront = () => {
         <Button 
           variant="outline" 
           onClick={() => setSelectedProduct(null)}
-          className="mb-4 border-blue-200 text-blue-600 hover:bg-blue-50"
+          className="mb-4 border-purple-300 text-purple-700 hover:bg-purple-50 font-semibold"
         >
           ← Back to Products
         </Button>
@@ -83,40 +78,55 @@ export const PublicStorefront = () => {
               className="h-[500px]"
             />
             
-            <Card className="gradient-card border-0 shadow-lg">
-              <CardContent className="p-6">
-                <div className="space-y-4">
+            <Card className="gradient-card border-0 shadow-2xl">
+              <CardContent className="p-8">
+                <div className="space-y-6">
                   <div>
-                    <h1 className="text-3xl font-bold mb-2 text-gray-800">{selectedProduct.name}</h1>
-                    <p className="text-4xl font-bold gradient-price bg-clip-text text-transparent">
+                    <h1 className="text-4xl font-bold mb-4 text-gray-800">{selectedProduct.name}</h1>
+                    <div className="price-text text-3xl font-black">
                       ₹{selectedProduct.price.toLocaleString('en-IN')}
-                    </p>
+                    </div>
                   </div>
                   
                   <div>
-                    <h3 className="text-lg font-semibold mb-2 text-gray-800">Description</h3>
-                    <p className="text-gray-600 leading-relaxed">{selectedProduct.description}</p>
+                    <h3 className="text-xl font-bold mb-3 text-gray-800">Description</h3>
+                    <p className="text-gray-700 leading-relaxed text-lg">{selectedProduct.description}</p>
                   </div>
                   
-                  <div className="space-y-3 pt-4">
+                  <div className="space-y-4 pt-6">
                     <Button 
-                      className="w-full gradient-primary hover:opacity-90 text-white" 
+                      className="w-full gradient-primary hover:opacity-90 text-white font-bold text-lg py-4" 
                       size="lg"
-                      onClick={() => addToCart(selectedProduct)}
+                      onClick={contactSeller}
                     >
-                      <ShoppingCart className="h-5 w-5 mr-2" />
-                      Add to Cart
+                      <Phone className="h-6 w-6 mr-3" />
+                      Contact Seller to Purchase
                     </Button>
                   </div>
                   
-                  <div className="border-t pt-6">
-                    <h3 className="text-lg font-semibold mb-3 text-gray-800">Product Features</h3>
-                    <ul className="space-y-2 text-gray-600">
-                      <li>• 360° interactive viewing experience</li>
-                      <li>• High-resolution product images</li>
-                      <li>• Zoom and rotate functionality</li>
-                      <li>• Mobile-responsive design</li>
-                      <li>• Detailed product specifications</li>
+                  <div className="border-t-2 border-purple-200 pt-6">
+                    <h3 className="text-xl font-bold mb-4 text-gray-800">Product Features</h3>
+                    <ul className="space-y-3 text-gray-700">
+                      <li className="flex items-center">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        360° interactive viewing experience
+                      </li>
+                      <li className="flex items-center">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        High-resolution product images
+                      </li>
+                      <li className="flex items-center">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        Zoom and rotate functionality
+                      </li>
+                      <li className="flex items-center">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        Mobile-responsive design
+                      </li>
+                      <li className="flex items-center">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        Detailed product specifications
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -126,50 +136,50 @@ export const PublicStorefront = () => {
 
           {/* Vendor Information - Takes 1 column */}
           <div className="space-y-6">
-            <Card className="gradient-card border-0 shadow-lg">
+            <Card className="gradient-card border-0 shadow-2xl">
               <CardContent className="p-0">
-                <div className="gradient-primary text-white p-4">
-                  <h3 className="text-lg font-semibold flex items-center">
-                    <Building className="h-5 w-5 mr-2" />
+                <div className="gradient-primary text-white p-6">
+                  <h3 className="text-xl font-bold flex items-center">
+                    <Building className="h-6 w-6 mr-3" />
                     Vendor Information
                   </h3>
                 </div>
-                <div className="p-4 space-y-4">
+                <div className="p-6 space-y-6">
                   <div>
-                    <h4 className="font-semibold text-gray-800 text-lg">{vendorInfo.businessName}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{vendorInfo.description}</p>
+                    <h4 className="font-bold text-gray-800 text-xl">{vendorInfo.businessName}</h4>
+                    <p className="text-gray-600 mt-2 leading-relaxed">{vendorInfo.description}</p>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm">
-                      <User className="h-4 w-4 mr-2 text-gray-500" />
-                      <span className="text-gray-700">{vendorInfo.contactPerson}</span>
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <User className="h-5 w-5 mr-3 text-purple-600" />
+                      <span className="text-gray-800 font-medium">{vendorInfo.contactPerson}</span>
                     </div>
                     
                     {vendorInfo.phone && (
-                      <div className="flex items-center text-sm">
-                        <Phone className="h-4 w-4 mr-2 text-gray-500" />
-                        <a href={`tel:${vendorInfo.phone}`} className="text-blue-600 hover:underline">
+                      <div className="flex items-center">
+                        <Phone className="h-5 w-5 mr-3 text-green-600" />
+                        <a href={`tel:${vendorInfo.phone}`} className="text-blue-600 hover:underline font-medium">
                           {vendorInfo.phone}
                         </a>
                       </div>
                     )}
                     
                     {vendorInfo.address && (
-                      <div className="flex items-start text-sm">
-                        <MapPin className="h-4 w-4 mr-2 text-gray-500 mt-0.5" />
-                        <span className="text-gray-700">{vendorInfo.address}</span>
+                      <div className="flex items-start">
+                        <MapPin className="h-5 w-5 mr-3 text-red-600 mt-0.5" />
+                        <span className="text-gray-800">{vendorInfo.address}</span>
                       </div>
                     )}
                     
                     {vendorInfo.website && (
-                      <div className="flex items-center text-sm">
-                        <Globe className="h-4 w-4 mr-2 text-gray-500" />
+                      <div className="flex items-center">
+                        <Globe className="h-5 w-5 mr-3 text-blue-600" />
                         <a 
                           href={vendorInfo.website.startsWith('http') ? vendorInfo.website : `https://${vendorInfo.website}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
+                          className="text-blue-600 hover:underline font-medium"
                         >
                           {vendorInfo.website}
                         </a>
@@ -179,7 +189,7 @@ export const PublicStorefront = () => {
                   
                   <Button 
                     variant="outline" 
-                    className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
+                    className="w-full border-purple-300 text-purple-700 hover:bg-purple-50 font-bold py-3"
                     size="lg"
                     onClick={contactSeller}
                   >
@@ -188,20 +198,6 @@ export const PublicStorefront = () => {
                 </div>
               </CardContent>
             </Card>
-
-            {cart.length > 0 && (
-              <Card className="gradient-card border-0 shadow-lg">
-                <CardContent className="p-4">
-                  <h3 className="font-semibold mb-2">Cart ({cart.length} items)</h3>
-                  <Button 
-                    className="w-full gradient-secondary hover:opacity-90 text-white"
-                    onClick={contactSeller}
-                  >
-                    Contact Seller to Purchase
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </div>
@@ -209,68 +205,64 @@ export const PublicStorefront = () => {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="text-center py-16 gradient-primary text-white rounded-2xl">
-        <h1 className="text-5xl font-bold mb-4">
+    <div className="space-y-12">
+      <div className="text-center py-20 gradient-primary text-white rounded-3xl shadow-2xl">
+        <h1 className="text-6xl font-black mb-6 text-shadow">
           3D Product Showcase
         </h1>
-        <p className="text-xl max-w-2xl mx-auto opacity-90">
+        <p className="text-2xl max-w-3xl mx-auto opacity-95 leading-relaxed">
           Explore our products in stunning 3D detail. Rotate, zoom, and interact with each item for an immersive shopping experience.
         </p>
       </div>
 
-      {cart.length > 0 && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-          Cart: {cart.length} items added. Contact seller to complete purchase.
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.map((product) => (
-          <Card key={product.id} className="gradient-card border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
-            <CardContent className="p-0">
-              <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-t-2xl overflow-hidden relative">
-                {product.images.length > 0 ? (
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    No Image
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        {products.map((product, index) => {
+          const cardClass = index === 0 ? 'card-smartphone' : index === 1 ? 'card-laptop' : 'card-headphones';
+          return (
+            <Card key={product.id} className={`${cardClass} border-0 shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 group`}>
+              <CardContent className="p-0">
+                <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-3xl overflow-hidden relative">
+                  {product.images.length > 0 ? (
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-bold">
+                      Product Image
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
+                    <Button
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 gradient-purple hover:opacity-90 text-white font-bold py-3 px-6 shadow-lg"
+                      onClick={() => setSelectedProduct(product)}
+                    >
+                      <Eye className="h-5 w-5 mr-2" />
+                      View in 3D
+                    </Button>
                   </div>
-                )}
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
-                  <Button
-                    className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 gradient-primary hover:opacity-90 text-white"
-                    onClick={() => setSelectedProduct(product)}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View in 3D
-                  </Button>
                 </div>
-              </div>
-              
-              <div className="p-6">
-                <h3 className="font-bold text-xl mb-3 text-gray-800">{product.name}</h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-3xl font-bold gradient-price bg-clip-text text-transparent">
-                    ₹{product.price.toLocaleString('en-IN')}
-                  </span>
-                  <Button
-                    size="sm"
-                    onClick={() => setSelectedProduct(product)}
-                    className="gradient-primary hover:opacity-90 text-white"
-                  >
-                    View Details
-                  </Button>
+                
+                <div className="p-8">
+                  <h3 className="font-black text-2xl mb-4 text-gray-800">{product.name}</h3>
+                  <p className="text-gray-600 mb-6 line-clamp-2 leading-relaxed">{product.description}</p>
+                  <div className="flex items-center justify-between">
+                    <div className="price-text text-2xl font-black">
+                      ₹{product.price.toLocaleString('en-IN')}
+                    </div>
+                    <Button
+                      onClick={() => setSelectedProduct(product)}
+                      className="gradient-primary hover:opacity-90 text-white font-bold py-2 px-6 shadow-lg"
+                    >
+                      View Details
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
