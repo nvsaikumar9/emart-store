@@ -38,8 +38,13 @@ export const useProducts = (showOnlyPublished = false) => {
         return;
       }
 
-      const formattedProducts = data.map(product => ({
-        ...product,
+      const formattedProducts: Product[] = data.map(product => ({
+        id: product.id,
+        vendor_id: product.vendor_id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        status: product.status as 'draft' | 'published',
         images: product.product_images
           ?.sort((a: any, b: any) => a.sort_order - b.sort_order)
           .map((img: any) => img.image_url) || []
