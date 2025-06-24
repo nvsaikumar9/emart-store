@@ -93,21 +93,21 @@ export const ProductManager = () => {
             <Button
               variant="outline"
               onClick={() => setShowPreview(!showPreview)}
-              className="border-blue-200 text-blue-600 hover:bg-blue-50"
+              className="btn-outline-visible"
             >
               <Eye className="h-4 w-4 mr-2" />
               {showPreview ? 'Hide Preview' : 'Show Preview'}
             </Button>
             <Button 
               onClick={handleSaveProduct}
-              className="gradient-primary hover:opacity-90 text-white"
+              className="btn-visible"
             >
               Save Product
             </Button>
             <Button 
               variant="outline" 
               onClick={() => setEditingProduct(null)}
-              className="border-gray-300 text-gray-600 hover:bg-gray-50"
+              className="btn-outline-visible"
             >
               Cancel
             </Button>
@@ -115,7 +115,7 @@ export const ProductManager = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="gradient-card border-0 shadow-lg">
+          <Card className="gradient-card shadow-lg">
             <CardHeader className="gradient-primary text-white">
               <CardTitle className="flex items-center">
                 <Package className="h-5 w-5 mr-2" />
@@ -153,7 +153,7 @@ export const ProductManager = () => {
               <div>
                 <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                   <DollarSign className="h-4 w-4 mr-2" />
-                  Price ($)
+                  Price (₹)
                 </label>
                 <Input
                   type="number"
@@ -182,7 +182,7 @@ export const ProductManager = () => {
                   <Button
                     variant="outline"
                     onClick={() => document.getElementById('image-upload')?.click()}
-                    className="w-full h-12 border-dashed border-2 border-blue-300 text-blue-600 hover:bg-blue-50"
+                    className="w-full h-12 border-dashed border-2 btn-outline-visible"
                     disabled={editingProduct.images.length >= 150}
                   >
                     <Upload className="h-5 w-5 mr-2" />
@@ -219,7 +219,7 @@ export const ProductManager = () => {
           </Card>
 
           {showPreview && (
-            <Card className="gradient-card border-0 shadow-lg">
+            <Card className="gradient-card shadow-lg">
               <CardHeader className="gradient-secondary text-white">
                 <CardTitle className="flex items-center">
                   <Eye className="h-5 w-5 mr-2" />
@@ -234,9 +234,9 @@ export const ProductManager = () => {
                 <div className="mt-6 space-y-3 p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-bold text-xl text-gray-800">{editingProduct.name || 'Product Name'}</h3>
                   <p className="text-gray-600 text-sm">{editingProduct.description || 'Product description will appear here...'}</p>
-                  <p className="text-3xl font-bold gradient-secondary bg-clip-text text-transparent">
-                    ${editingProduct.price.toFixed(2)}
-                  </p>
+                  <div className="price-text text-xl font-bold">
+                    ₹{editingProduct.price.toFixed(2)}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -252,7 +252,7 @@ export const ProductManager = () => {
         <h2 className="text-3xl font-bold text-gray-800">Product Management</h2>
         <Button 
           onClick={handleCreateProduct}
-          className="gradient-primary hover:opacity-90 text-white"
+          className="btn-visible"
         >
           <Plus className="h-4 w-4 mr-2" />
           Create Product
@@ -261,7 +261,7 @@ export const ProductManager = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
-          <Card key={product.id} className="gradient-card border-0 shadow-lg hover:shadow-xl transition-shadow">
+          <Card key={product.id} className="gradient-card shadow-lg hover:shadow-xl transition-shadow">
             <CardContent className="p-0">
               <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-t-lg mb-4 overflow-hidden">
                 {product.images.length > 0 ? (
@@ -279,9 +279,9 @@ export const ProductManager = () => {
               <div className="p-4">
                 <h3 className="font-bold text-lg mb-2 text-gray-800">{product.name}</h3>
                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
-                <p className="text-2xl font-bold gradient-secondary bg-clip-text text-transparent mb-4">
-                  ${product.price.toFixed(2)}
-                </p>
+                <div className="price-text text-lg font-bold mb-4">
+                  ₹{product.price.toFixed(2)}
+                </div>
                 
                 <div className="flex items-center justify-between">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -296,7 +296,7 @@ export const ProductManager = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => setEditingProduct(product)}
-                      className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                      className="btn-outline-visible text-xs"
                     >
                       Edit
                     </Button>

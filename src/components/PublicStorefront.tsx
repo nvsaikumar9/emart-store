@@ -64,7 +64,7 @@ export const PublicStorefront = () => {
         <Button 
           variant="outline" 
           onClick={() => setSelectedProduct(null)}
-          className="mb-4 border-purple-300 text-purple-700 hover:bg-purple-50 font-semibold"
+          className="btn-outline-visible mb-4"
         >
           ← Back to Products
         </Button>
@@ -78,12 +78,12 @@ export const PublicStorefront = () => {
               className="h-[500px]"
             />
             
-            <Card className="gradient-card border-0 shadow-2xl">
+            <Card className="gradient-card shadow-2xl">
               <CardContent className="p-8">
                 <div className="space-y-6">
                   <div>
                     <h1 className="text-4xl font-bold mb-4 text-gray-800">{selectedProduct.name}</h1>
-                    <div className="price-text text-3xl font-black">
+                    <div className="price-text text-2xl font-black">
                       ₹{selectedProduct.price.toLocaleString('en-IN')}
                     </div>
                   </div>
@@ -95,7 +95,7 @@ export const PublicStorefront = () => {
                   
                   <div className="space-y-4 pt-6">
                     <Button 
-                      className="w-full gradient-primary hover:opacity-90 text-white font-bold text-lg py-4" 
+                      className="w-full btn-visible text-lg py-4" 
                       size="lg"
                       onClick={contactSeller}
                     >
@@ -104,27 +104,27 @@ export const PublicStorefront = () => {
                     </Button>
                   </div>
                   
-                  <div className="border-t-2 border-purple-200 pt-6">
+                  <div className="border-t-2 border-gray-200 pt-6">
                     <h3 className="text-xl font-bold mb-4 text-gray-800">Product Features</h3>
                     <ul className="space-y-3 text-gray-700">
                       <li className="flex items-center">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                         360° interactive viewing experience
                       </li>
                       <li className="flex items-center">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                         High-resolution product images
                       </li>
                       <li className="flex items-center">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                         Zoom and rotate functionality
                       </li>
                       <li className="flex items-center">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                         Mobile-responsive design
                       </li>
                       <li className="flex items-center">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                         Detailed product specifications
                       </li>
                     </ul>
@@ -136,7 +136,7 @@ export const PublicStorefront = () => {
 
           {/* Vendor Information - Takes 1 column */}
           <div className="space-y-6">
-            <Card className="gradient-card border-0 shadow-2xl">
+            <Card className="gradient-card shadow-2xl">
               <CardContent className="p-0">
                 <div className="gradient-primary text-white p-6">
                   <h3 className="text-xl font-bold flex items-center">
@@ -152,7 +152,7 @@ export const PublicStorefront = () => {
                   
                   <div className="space-y-4">
                     <div className="flex items-center">
-                      <User className="h-5 w-5 mr-3 text-purple-600" />
+                      <User className="h-5 w-5 mr-3 text-blue-600" />
                       <span className="text-gray-800 font-medium">{vendorInfo.contactPerson}</span>
                     </div>
                     
@@ -189,7 +189,7 @@ export const PublicStorefront = () => {
                   
                   <Button 
                     variant="outline" 
-                    className="w-full border-purple-300 text-purple-700 hover:bg-purple-50 font-bold py-3"
+                    className="w-full btn-outline-visible py-3"
                     size="lg"
                     onClick={contactSeller}
                   >
@@ -207,7 +207,7 @@ export const PublicStorefront = () => {
   return (
     <div className="space-y-12">
       <div className="text-center py-20 gradient-primary text-white rounded-3xl shadow-2xl">
-        <h1 className="text-6xl font-black mb-6 text-shadow">
+        <h1 className="text-6xl font-black mb-6">
           3D Product Showcase
         </h1>
         <p className="text-2xl max-w-3xl mx-auto opacity-95 leading-relaxed">
@@ -219,7 +219,7 @@ export const PublicStorefront = () => {
         {products.map((product, index) => {
           const cardClass = index === 0 ? 'card-smartphone' : index === 1 ? 'card-laptop' : 'card-headphones';
           return (
-            <Card key={product.id} className={`${cardClass} border-0 shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 group`}>
+            <Card key={product.id} className={`${cardClass} shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 group`}>
               <CardContent className="p-0">
                 <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-3xl overflow-hidden relative">
                   {product.images.length > 0 ? (
@@ -235,7 +235,7 @@ export const PublicStorefront = () => {
                   )}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
                     <Button
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 gradient-purple hover:opacity-90 text-white font-bold py-3 px-6 shadow-lg"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 btn-visible py-3 px-6 shadow-lg"
                       onClick={() => setSelectedProduct(product)}
                     >
                       <Eye className="h-5 w-5 mr-2" />
@@ -248,12 +248,12 @@ export const PublicStorefront = () => {
                   <h3 className="font-black text-2xl mb-4 text-gray-800">{product.name}</h3>
                   <p className="text-gray-600 mb-6 line-clamp-2 leading-relaxed">{product.description}</p>
                   <div className="flex items-center justify-between">
-                    <div className="price-text text-2xl font-black">
+                    <div className="price-text text-xl font-black">
                       ₹{product.price.toLocaleString('en-IN')}
                     </div>
                     <Button
                       onClick={() => setSelectedProduct(product)}
-                      className="gradient-primary hover:opacity-90 text-white font-bold py-2 px-6 shadow-lg"
+                      className="btn-visible py-2 px-6 shadow-lg"
                     >
                       View Details
                     </Button>

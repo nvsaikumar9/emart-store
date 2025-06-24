@@ -36,8 +36,7 @@ const AppContent = () => {
               <h1 className="text-2xl font-black text-white">3D Product Showcase</h1>
               <Button 
                 onClick={() => setShowStorefront(false)}
-                variant="outline"
-                className="border-white border-opacity-30 text-white hover:bg-white hover:text-blue-600 font-bold"
+                className="btn-outline-visible"
               >
                 Vendor Login
               </Button>
@@ -61,8 +60,7 @@ const AppContent = () => {
               <h1 className="text-2xl font-black text-white">3D Product Showcase</h1>
               <Button 
                 onClick={() => setShowStorefront(true)}
-                variant="outline"
-                className="flex items-center space-x-2 border-white border-opacity-30 text-white hover:bg-white hover:text-blue-600 font-bold"
+                className="btn-outline-visible flex items-center space-x-2"
               >
                 <Store className="h-5 w-5" />
                 <span>View Storefront</span>
