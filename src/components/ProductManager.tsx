@@ -5,34 +5,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ProductViewer3D } from './ProductViewer3D';
+import { useProducts, Product } from '@/hooks/useProducts';
 import { Plus, Upload, Trash2, Eye, Package, DollarSign, FileText } from 'lucide-react';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  images: string[];
-  status: 'draft' | 'published';
-}
-
 export const ProductManager = () => {
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: '1',
-      name: 'Sample Product',
-      description: 'This is a sample product with 360° view',
-      price: 99.99,
-      images: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg'],
-      status: 'published'
-    }
-  ]);
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const { products, loading, saveProduct, deleteProduct } = useProducts();
+  const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const handleCreateProduct = () => {
-    const newProduct: Product = {
-      id: Date.now().toString(),
+    const newProduct: Partial<Product> = {
       name: '',
       description: '',
       price: 0,
@@ -43,34 +26,39 @@ export const ProductManager = () => {
     setShowPreview(true);
   };
 
-  const handleSaveProduct = () => {
+  const handleSaveProduct = async () => {
     if (!editingProduct) return;
 
-    if (editingProduct.id && products.find(p => p.id === editingProduct.id)) {
-      setProducts(prev => prev.map(p => p.id === editingProduct.id ? editingProduct : p));
-    } else {
-      setProducts(prev => [...prev, { ...editingProduct, id: Date.now().toString() }]);
+    setSaving(true);
+    try {
+      await saveProduct(editingProduct);
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Error saving product:', error);
+    } finally {
+      setSaving(false);
     }
-    setEditingProduct(null);
   };
 
-  const handleDeleteProduct = (id: string) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
+  const handleDeleteProduct = async (id: string) => {
+    try {
+      await deleteProduct(id);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0 || !editingProduct) return;
 
-    // Simulate image upload - in real app, upload to storage service
-    const imageUrls = files.map((file, index) => {
-      // Create object URL for preview
+    const imageUrls = files.map((file) => {
       return URL.createObjectURL(file);
     });
     
     setEditingProduct({
       ...editingProduct,
-      images: [...editingProduct.images, ...imageUrls].slice(0, 150) // Limit to 150 images
+      images: [...(editingProduct.images || []), ...imageUrls].slice(0, 150)
     });
   };
 
@@ -78,16 +66,24 @@ export const ProductManager = () => {
     if (!editingProduct) return;
     setEditingProduct({
       ...editingProduct,
-      images: editingProduct.images.filter((_, i) => i !== index)
+      images: editingProduct.images?.filter((_, i) => i !== index)
     });
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (editingProduct) {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold text-gray-800">
-            {editingProduct.id && products.find(p => p.id === editingProduct.id) ? 'Edit Product' : 'Create Product'}
+            {editingProduct.id ? 'Edit Product' : 'Create Product'}
           </h2>
           <div className="space-x-2">
             <Button
@@ -100,9 +96,10 @@ export const ProductManager = () => {
             </Button>
             <Button 
               onClick={handleSaveProduct}
+              disabled={saving}
               className="btn-visible"
             >
-              Save Product
+              {saving ? 'Saving...' : 'Save Product'}
             </Button>
             <Button 
               variant="outline" 
@@ -129,7 +126,7 @@ export const ProductManager = () => {
                   Product Name
                 </label>
                 <Input
-                  value={editingProduct.name}
+                  value={editingProduct.name || ''}
                   onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
                   placeholder="Enter product name"
                   className="h-12 border-gray-200 focus:border-blue-500"
@@ -142,7 +139,7 @@ export const ProductManager = () => {
                   Description
                 </label>
                 <Textarea
-                  value={editingProduct.description}
+                  value={editingProduct.description || ''}
                   onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
                   placeholder="Enter product description"
                   rows={4}
@@ -157,7 +154,7 @@ export const ProductManager = () => {
                 </label>
                 <Input
                   type="number"
-                  value={editingProduct.price}
+                  value={editingProduct.price || 0}
                   onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})}
                   placeholder="0.00"
                   step="0.01"
@@ -168,7 +165,7 @@ export const ProductManager = () => {
               <div>
                 <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                   <Upload className="h-4 w-4 mr-2" />
-                  Product Images ({editingProduct.images.length}/150)
+                  Product Images ({(editingProduct.images || []).length}/150)
                 </label>
                 <div className="space-y-4">
                   <input
@@ -183,13 +180,13 @@ export const ProductManager = () => {
                     variant="outline"
                     onClick={() => document.getElementById('image-upload')?.click()}
                     className="w-full h-12 border-dashed border-2 btn-outline-visible"
-                    disabled={editingProduct.images.length >= 150}
+                    disabled={(editingProduct.images || []).length >= 150}
                   >
                     <Upload className="h-5 w-5 mr-2" />
                     Upload Images (Max 150)
                   </Button>
                   
-                  {editingProduct.images.length > 0 && (
+                  {editingProduct.images && editingProduct.images.length > 0 && (
                     <div className="grid grid-cols-4 gap-3 mt-4 max-h-60 overflow-y-auto">
                       {editingProduct.images.map((image, index) => (
                         <div key={index} className="relative group">
@@ -228,14 +225,14 @@ export const ProductManager = () => {
               </CardHeader>
               <CardContent className="p-6">
                 <ProductViewer3D
-                  images={editingProduct.images}
+                  images={editingProduct.images || []}
                   productName={editingProduct.name || 'Product Preview'}
                 />
                 <div className="mt-6 space-y-3 p-4 bg-gray-50 rounded-lg">
                   <h3 className="font-bold text-xl text-gray-800">{editingProduct.name || 'Product Name'}</h3>
                   <p className="text-gray-600 text-sm">{editingProduct.description || 'Product description will appear here...'}</p>
                   <div className="price-text text-xl font-bold">
-                    ₹{editingProduct.price.toFixed(2)}
+                    ₹{(editingProduct.price || 0).toFixed(2)}
                   </div>
                 </div>
               </CardContent>

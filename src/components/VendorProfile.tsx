@@ -1,35 +1,59 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from './AuthProvider';
+import { useVendor } from '@/hooks/useVendor';
 import { Save, Building, User, Phone, MapPin, Globe, FileText } from 'lucide-react';
 
 export const VendorProfile = () => {
-  const { user, updateVendorDetails } = useAuth();
+  const { vendor, loading, createOrUpdateVendor } = useVendor();
   const [formData, setFormData] = useState({
-    businessName: user?.businessName || '',
-    contactPerson: user?.contactPerson || '',
-    phone: user?.phone || '',
-    address: user?.address || '',
-    website: user?.website || '',
-    description: user?.description || ''
+    business_name: '',
+    contact_person: '',
+    phone: '',
+    address: '',
+    website: '',
+    description: ''
   });
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (vendor) {
+      setFormData({
+        business_name: vendor.business_name || '',
+        contact_person: vendor.contact_person || '',
+        phone: vendor.phone || '',
+        address: vendor.address || '',
+        website: vendor.website || '',
+        description: vendor.description || ''
+      });
+    }
+  }, [vendor]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaving(true);
-    setTimeout(() => {
-      updateVendorDetails(formData);
+    try {
+      await createOrUpdateVendor(formData);
+    } catch (error) {
+      console.error('Error saving vendor profile:', error);
+    } finally {
       setSaving(false);
-    }, 500);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -60,8 +84,8 @@ export const VendorProfile = () => {
                 Business Name
               </label>
               <Input
-                value={formData.businessName}
-                onChange={(e) => handleInputChange('businessName', e.target.value)}
+                value={formData.business_name}
+                onChange={(e) => handleInputChange('business_name', e.target.value)}
                 placeholder="Enter your business name"
                 className="h-12 border-gray-200 focus:border-blue-500"
               />
@@ -73,8 +97,8 @@ export const VendorProfile = () => {
                 Contact Person
               </label>
               <Input
-                value={formData.contactPerson}
-                onChange={(e) => handleInputChange('contactPerson', e.target.value)}
+                value={formData.contact_person}
+                onChange={(e) => handleInputChange('contact_person', e.target.value)}
                 placeholder="Enter contact person name"
                 className="h-12 border-gray-200 focus:border-blue-500"
               />

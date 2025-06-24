@@ -3,60 +3,38 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductViewer3D } from './ProductViewer3D';
-import { useAuth } from './AuthProvider';
+import { useProducts, Product } from '@/hooks/useProducts';
+import { useVendor } from '@/hooks/useVendor';
 import { Eye, Phone, MapPin, Globe, User, Building } from 'lucide-react';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  images: string[];
-}
-
 export const PublicStorefront = () => {
-  const { user } = useAuth();
+  const { products, loading } = useProducts(true); // Only show published products
+  const { vendor } = useVendor();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
-  // Get vendor info from authenticated vendor user or use defaults
+  // Get vendor info or use defaults
   const vendorInfo = {
-    businessName: user?.businessName || "Tech Gadgets Store",
-    contactPerson: user?.contactPerson || "Vendor Contact",
-    phone: user?.phone || "+91 70957 70758",
-    address: user?.address || "Business Address, India",
-    website: user?.website || "www.example.com",
-    description: user?.description || "Quality products and services for all your needs."
+    businessName: vendor?.business_name || "Tech Gadgets Store",
+    contactPerson: vendor?.contact_person || "Vendor Contact",
+    phone: vendor?.phone || "+91 70957 70758",
+    address: vendor?.address || "Business Address, India",
+    website: vendor?.website || "www.example.com",
+    description: vendor?.description || "Quality products and services for all your needs."
   };
-  
-  const products: Product[] = [
-    {
-      id: '1',
-      name: 'Premium Smartphone',
-      description: 'Latest flagship smartphone with advanced camera system and 5G connectivity. Experience the future of mobile technology.',
-      price: 89999,
-      images: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg', '/placeholder.svg']
-    },
-    {
-      id: '2',
-      name: 'Gaming Laptop Pro',
-      description: 'High-performance gaming laptop with RTX graphics and 144Hz display. Built for serious gamers and content creators.',
-      price: 149999,
-      images: ['/placeholder.svg', '/placeholder.svg', '/placeholder.svg']
-    },
-    {
-      id: '3',
-      name: 'Wireless Headphones',
-      description: 'Premium noise-canceling headphones with 30-hour battery life. Crystal clear sound for music and calls.',
-      price: 29999,
-      images: ['/placeholder.svg', '/placeholder.svg']
-    }
-  ];
 
   const contactSeller = () => {
     if (vendorInfo.phone) {
       window.open(`tel:${vendorInfo.phone}`, '_blank');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (selectedProduct) {
     return (
@@ -215,55 +193,62 @@ export const PublicStorefront = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {products.map((product, index) => {
-          const cardClass = index === 0 ? 'card-smartphone' : index === 1 ? 'card-laptop' : 'card-headphones';
-          return (
-            <Card key={product.id} className={`${cardClass} shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 group`}>
-              <CardContent className="p-0">
-                <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-3xl overflow-hidden relative">
-                  {product.images.length > 0 ? (
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-bold">
-                      Product Image
+      {products.length === 0 ? (
+        <div className="text-center py-20">
+          <h2 className="text-3xl font-bold text-gray-600 mb-4">No Products Available</h2>
+          <p className="text-xl text-gray-500">Products will appear here once vendors publish them.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {products.map((product, index) => {
+            const cardClass = index === 0 ? 'card-smartphone' : index === 1 ? 'card-laptop' : 'card-headphones';
+            return (
+              <Card key={product.id} className={`${cardClass} shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 group`}>
+                <CardContent className="p-0">
+                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-3xl overflow-hidden relative">
+                    {product.images.length > 0 ? (
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-bold">
+                        Product Image
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
+                      <Button
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 btn-visible py-3 px-6 shadow-lg"
+                        onClick={() => setSelectedProduct(product)}
+                      >
+                        <Eye className="h-5 w-5 mr-2" />
+                        View in 3D
+                      </Button>
                     </div>
-                  )}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
-                    <Button
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 btn-visible py-3 px-6 shadow-lg"
-                      onClick={() => setSelectedProduct(product)}
-                    >
-                      <Eye className="h-5 w-5 mr-2" />
-                      View in 3D
-                    </Button>
                   </div>
-                </div>
-                
-                <div className="p-8">
-                  <h3 className="font-black text-2xl mb-4 text-gray-800">{product.name}</h3>
-                  <p className="text-gray-600 mb-6 line-clamp-2 leading-relaxed">{product.description}</p>
-                  <div className="flex items-center justify-between">
-                    <div className="price-text text-xl font-black">
-                      ₹{product.price.toLocaleString('en-IN')}
+                  
+                  <div className="p-8">
+                    <h3 className="font-black text-2xl mb-4 text-gray-800">{product.name}</h3>
+                    <p className="text-gray-600 mb-6 line-clamp-2 leading-relaxed">{product.description}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="price-text text-xl font-black">
+                        ₹{product.price.toLocaleString('en-IN')}
+                      </div>
+                      <Button
+                        onClick={() => setSelectedProduct(product)}
+                        className="btn-visible py-2 px-6 shadow-lg"
+                      >
+                        View Details
+                      </Button>
                     </div>
-                    <Button
-                      onClick={() => setSelectedProduct(product)}
-                      className="btn-visible py-2 px-6 shadow-lg"
-                    >
-                      View Details
-                    </Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,5 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface User {
   id: string;
@@ -28,40 +30,84 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          role: 'vendor' // For now, all users are vendors
+        });
+      }
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email || '',
+          role: 'vendor'
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Vendor login
+    // For demo purposes, use hardcoded credentials
     if (email === 'n.v.saikumar9@gmail.com' && password === '7095770758') {
-      const vendorUser = { 
-        id: '1', 
-        email: 'n.v.saikumar9@gmail.com', 
-        role: 'vendor' as const,
-        businessName: '',
-        contactPerson: '',
-        phone: '',
-        address: '',
-        website: '',
-        description: ''
-      };
-      setUser(vendorUser);
-      localStorage.setItem('user', JSON.stringify(vendorUser));
+      // Sign up or sign in the demo user
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error && error.message.includes('Invalid login credentials')) {
+        // User doesn't exist, let's sign them up
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        
+        if (signUpError) {
+          console.error('Sign up error:', signUpError);
+          throw new Error('Authentication failed');
+        }
+      } else if (error) {
+        console.error('Sign in error:', error);
+        throw new Error('Authentication failed');
+      }
     } 
     // Customer login (demo customer)
     else if (email === 'customer@example.com' && password === 'customer123') {
-      const customerUser = { 
-        id: '2', 
-        email: 'customer@example.com', 
-        role: 'customer' as const
-      };
-      setUser(customerUser);
-      localStorage.setItem('user', JSON.stringify(customerUser));
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error && error.message.includes('Invalid login credentials')) {
+        // User doesn't exist, let's sign them up
+        const { error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        
+        if (signUpError) {
+          console.error('Sign up error:', signUpError);
+          throw new Error('Authentication failed');
+        }
+      } else if (error) {
+        console.error('Sign in error:', error);
+        throw new Error('Authentication failed');
+      }
     } else {
       throw new Error('Invalid credentials');
     }
@@ -69,15 +115,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateVendorDetails = (details: Partial<User>) => {
     if (user && user.role === 'vendor') {
-      const updatedUser = { ...user, ...details };
-      setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser({ ...user, ...details });
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem('user');
   };
 
   return (
