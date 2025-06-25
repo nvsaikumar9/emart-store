@@ -68,7 +68,7 @@ const AppContent = () => {
             </div>
           </div>
         </div>
-        <LoginForm userType="vendor" />
+        <LoginForm />
       </div>
     );
   }
