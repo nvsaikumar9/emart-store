@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useVendor } from '@/hooks/useVendor';
-import { Save, Building, User, Phone, MapPin, Globe, FileText } from 'lucide-react';
+import { vendorProfileSchema, type VendorProfileInput } from '@/utils/validation';
+import { Save, Building, User, Phone, MapPin, Globe, FileText, AlertCircle } from 'lucide-react';
 
 export const VendorProfile = () => {
   const { vendor, loading, createOrUpdateVendor } = useVendor();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<VendorProfileInput>({
     business_name: '',
     contact_person: '',
     phone: '',
@@ -18,6 +19,7 @@ export const VendorProfile = () => {
     description: ''
   });
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (vendor) {
@@ -32,16 +34,42 @@ export const VendorProfile = () => {
     }
   }, [vendor]);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof VendorProfileInput, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    try {
+      vendorProfileSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (error: any) {
+      const validationErrors: Record<string, string> = {};
+      error.errors?.forEach((err: any) => {
+        const field = err.path[0];
+        validationErrors[field] = err.message;
+      });
+      setErrors(validationErrors);
+      return false;
+    }
   };
 
   const handleSave = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     setSaving(true);
     try {
       await createOrUpdateVendor(formData);
     } catch (error) {
       console.error('Error saving vendor profile:', error);
+      // Show user-friendly error message
+      setErrors({ general: 'Failed to save profile. Please try again.' });
     } finally {
       setSaving(false);
     }
@@ -69,6 +97,13 @@ export const VendorProfile = () => {
         </Button>
       </div>
 
+      {errors.general && (
+        <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <AlertCircle className="h-5 w-5 text-red-600" />
+          <span className="text-red-700">{errors.general}</span>
+        </div>
+      )}
+
       <Card className="gradient-card border-0 shadow-lg">
         <CardHeader className="gradient-primary text-white">
           <CardTitle className="flex items-center">
@@ -81,40 +116,52 @@ export const VendorProfile = () => {
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <Building className="h-4 w-4 mr-2" />
-                Business Name
+                Business Name *
               </label>
               <Input
                 value={formData.business_name}
                 onChange={(e) => handleInputChange('business_name', e.target.value)}
                 placeholder="Enter your business name"
-                className="h-12 border-gray-200 focus:border-blue-500"
+                className={`h-12 border-gray-200 focus:border-blue-500 ${errors.business_name ? 'border-red-500' : ''}`}
+                maxLength={100}
               />
+              {errors.business_name && (
+                <p className="text-red-600 text-sm mt-1">{errors.business_name}</p>
+              )}
             </div>
             
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <User className="h-4 w-4 mr-2" />
-                Contact Person
+                Contact Person *
               </label>
               <Input
                 value={formData.contact_person}
                 onChange={(e) => handleInputChange('contact_person', e.target.value)}
                 placeholder="Enter contact person name"
-                className="h-12 border-gray-200 focus:border-blue-500"
+                className={`h-12 border-gray-200 focus:border-blue-500 ${errors.contact_person ? 'border-red-500' : ''}`}
+                maxLength={100}
               />
+              {errors.contact_person && (
+                <p className="text-red-600 text-sm mt-1">{errors.contact_person}</p>
+              )}
             </div>
             
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <Phone className="h-4 w-4 mr-2" />
-                Phone Number
+                Phone Number *
               </label>
               <Input
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 placeholder="Enter phone number"
-                className="h-12 border-gray-200 focus:border-blue-500"
+                className={`h-12 border-gray-200 focus:border-blue-500 ${errors.phone ? 'border-red-500' : ''}`}
+                maxLength={15}
               />
+              {errors.phone && (
+                <p className="text-red-600 text-sm mt-1">{errors.phone}</p>
+              )}
             </div>
             
             <div>
@@ -126,8 +173,11 @@ export const VendorProfile = () => {
                 value={formData.website}
                 onChange={(e) => handleInputChange('website', e.target.value)}
                 placeholder="Enter website URL"
-                className="h-12 border-gray-200 focus:border-blue-500"
+                className={`h-12 border-gray-200 focus:border-blue-500 ${errors.website ? 'border-red-500' : ''}`}
               />
+              {errors.website && (
+                <p className="text-red-600 text-sm mt-1">{errors.website}</p>
+              )}
             </div>
           </div>
           
@@ -141,8 +191,12 @@ export const VendorProfile = () => {
               onChange={(e) => handleInputChange('address', e.target.value)}
               placeholder="Enter your business address"
               rows={3}
-              className="border-gray-200 focus:border-blue-500"
+              className={`border-gray-200 focus:border-blue-500 ${errors.address ? 'border-red-500' : ''}`}
+              maxLength={500}
             />
+            {errors.address && (
+              <p className="text-red-600 text-sm mt-1">{errors.address}</p>
+            )}
           </div>
           
           <div>
@@ -155,8 +209,12 @@ export const VendorProfile = () => {
               onChange={(e) => handleInputChange('description', e.target.value)}
               placeholder="Describe your business and what you offer"
               rows={4}
-              className="border-gray-200 focus:border-blue-500"
+              className={`border-gray-200 focus:border-blue-500 ${errors.description ? 'border-red-500' : ''}`}
+              maxLength={1000}
             />
+            {errors.description && (
+              <p className="text-red-600 text-sm mt-1">{errors.description}</p>
+            )}
           </div>
         </CardContent>
       </Card>
