@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,10 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ProductViewer3D } from './ProductViewer3D';
 import { useProducts, Product } from '@/hooks/useProducts';
-import { Plus, Upload, Trash2, Eye, Package, DollarSign, FileText } from 'lucide-react';
+import { Plus, Upload, Trash2, Eye, Package, DollarSign, FileText, CheckCircle, XCircle } from 'lucide-react';
 
 export const ProductManager = () => {
-  const { products, loading, saveProduct, deleteProduct } = useProducts();
+  const { products, loading, saveProduct, deleteProduct, publishProduct, unpublishProduct } = useProducts();
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -45,6 +44,22 @@ export const ProductManager = () => {
       await deleteProduct(id);
     } catch (error) {
       console.error('Error deleting product:', error);
+    }
+  };
+
+  const handlePublishProduct = async (id: string) => {
+    try {
+      await publishProduct(id);
+    } catch (error) {
+      console.error('Error publishing product:', error);
+    }
+  };
+
+  const handleUnpublishProduct = async (id: string) => {
+    try {
+      await unpublishProduct(id);
+    } catch (error) {
+      console.error('Error unpublishing product:', error);
     }
   };
 
@@ -280,7 +295,7 @@ export const ProductManager = () => {
                   ₹{product.price.toFixed(2)}
                 </div>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                     product.status === 'published' 
                       ? 'bg-green-100 text-green-800' 
@@ -288,23 +303,44 @@ export const ProductManager = () => {
                   }`}>
                     {product.status}
                   </span>
-                  <div className="space-x-2">
+                  {product.status === 'published' ? (
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => setEditingProduct(product)}
+                      onClick={() => handleUnpublishProduct(product.id)}
                       className="btn-outline-visible text-xs"
                     >
-                      Edit
+                      <XCircle className="h-4 w-4 mr-1" />
+                      Unpublish
                     </Button>
+                  ) : (
                     <Button
                       size="sm"
-                      variant="destructive"
-                      onClick={() => handleDeleteProduct(product.id)}
+                      onClick={() => handlePublishProduct(product.id)}
+                      className="btn-visible text-xs"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      Publish
                     </Button>
-                  </div>
+                  )}
+                </div>
+                
+                <div className="space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setEditingProduct(product)}
+                    className="btn-outline-visible text-xs"
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleDeleteProduct(product.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </CardContent>

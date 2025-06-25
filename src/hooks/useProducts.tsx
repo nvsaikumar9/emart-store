@@ -42,6 +42,7 @@ export const useProducts = (showOnlyPublished = false) => {
   const fetchProducts = async () => {
     try {
       console.log('Fetching products, showOnlyPublished:', showOnlyPublished);
+      console.log('Current user:', user);
       
       let query = (supabase as any)
         .from('products')
@@ -52,6 +53,19 @@ export const useProducts = (showOnlyPublished = false) => {
 
       if (showOnlyPublished) {
         query = query.eq('status', 'published');
+        console.log('Filtering for published products only');
+      } else if (user) {
+        // For vendor view, only show their products
+        const { data: vendor } = await (supabase as any)
+          .from('vendors')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
+          
+        if (vendor) {
+          query = query.eq('vendor_id', (vendor as VendorRow).id);
+          console.log('Filtering for vendor products:', (vendor as VendorRow).id);
+        }
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
@@ -207,6 +221,50 @@ export const useProducts = (showOnlyPublished = false) => {
     }
   };
 
+  const publishProduct = async (productId: string) => {
+    try {
+      console.log('Publishing product:', productId);
+      
+      const { error } = await (supabase as any)
+        .from('products')
+        .update({ status: 'published' })
+        .eq('id', productId);
+
+      if (error) {
+        console.error('Error publishing product:', error);
+        throw error;
+      }
+
+      console.log('Product published successfully');
+      await fetchProducts();
+    } catch (error) {
+      console.error('Error publishing product:', error);
+      throw error;
+    }
+  };
+
+  const unpublishProduct = async (productId: string) => {
+    try {
+      console.log('Unpublishing product:', productId);
+      
+      const { error } = await (supabase as any)
+        .from('products')
+        .update({ status: 'draft' })
+        .eq('id', productId);
+
+      if (error) {
+        console.error('Error unpublishing product:', error);
+        throw error;
+      }
+
+      console.log('Product unpublished successfully');
+      await fetchProducts();
+    } catch (error) {
+      console.error('Error unpublishing product:', error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
 
@@ -230,13 +288,15 @@ export const useProducts = (showOnlyPublished = false) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [showOnlyPublished]);
+  }, [showOnlyPublished, user?.id]);
 
   return {
     products,
     loading,
     saveProduct,
     deleteProduct,
+    publishProduct,
+    unpublishProduct,
     refetch: fetchProducts
   };
 };
