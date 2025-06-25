@@ -1,6 +1,5 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useSecureAuth } from '@/hooks/useSecureAuth';
 
 interface User {
@@ -33,40 +32,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { signIn, error: authError, clearError } = useSecureAuth();
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || '',
-          role: 'vendor' // Default role - this should be determined from user data
-        });
+    // Check for stored vendor session
+    const storedSession = localStorage.getItem('vendor_session');
+    if (storedSession) {
+      try {
+        const userData = JSON.parse(storedSession);
+        setUser(userData);
+      } catch (error) {
+        console.error('Error parsing stored session:', error);
+        localStorage.removeItem('vendor_session');
       }
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || '',
-          role: 'vendor'
-        });
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    }
+    setLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      await signIn(email, password);
+      const result = await signIn(email, password);
+      if (result.user) {
+        setUser(result.user);
+      }
     } catch (error) {
       // Error is already handled by useSecureAuth hook
       throw error;
@@ -75,13 +60,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateVendorDetails = (details: Partial<User>) => {
     if (user && user.role === 'vendor') {
-      setUser({ ...user, ...details });
+      const updatedUser = { ...user, ...details };
+      setUser(updatedUser);
+      localStorage.setItem('vendor_session', JSON.stringify(updatedUser));
     }
   };
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      localStorage.removeItem('vendor_session');
       setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
