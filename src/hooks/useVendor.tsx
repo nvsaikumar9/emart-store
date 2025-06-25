@@ -14,6 +14,20 @@ export interface Vendor {
   description?: string;
 }
 
+// Type assertion to work around the types sync issue
+type VendorRow = {
+  id: string;
+  user_id: string;
+  business_name: string | null;
+  contact_person: string | null;
+  phone: string | null;
+  address: string | null;
+  website: string | null;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export const useVendor = () => {
   const { user } = useAuth();
   const [vendor, setVendor] = useState<Vendor | null>(null);
@@ -27,7 +41,7 @@ export const useVendor = () => {
     
     try {
       console.log('Fetching vendor for user ID:', user.id);
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('vendors')
         .select('*')
         .eq('user_id', user.id)
@@ -38,7 +52,21 @@ export const useVendor = () => {
         setVendor(null);
       } else {
         console.log('Fetched vendor data:', data);
-        setVendor(data);
+        const vendorData = data as VendorRow | null;
+        if (vendorData) {
+          setVendor({
+            id: vendorData.id,
+            user_id: vendorData.user_id,
+            business_name: vendorData.business_name || undefined,
+            contact_person: vendorData.contact_person || undefined,
+            phone: vendorData.phone || undefined,
+            address: vendorData.address || undefined,
+            website: vendorData.website || undefined,
+            description: vendorData.description || undefined
+          });
+        } else {
+          setVendor(null);
+        }
       }
     } catch (error) {
       console.error('Error fetching vendor:', error);
@@ -67,7 +95,7 @@ export const useVendor = () => {
         description: vendorData.description || null
       };
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('vendors')
         .upsert(dataToSave, {
           onConflict: 'user_id'
@@ -81,8 +109,20 @@ export const useVendor = () => {
       }
 
       console.log('Vendor saved successfully:', data);
-      setVendor(data);
-      return data;
+      const savedVendor = data as VendorRow;
+      const formattedVendor: Vendor = {
+        id: savedVendor.id,
+        user_id: savedVendor.user_id,
+        business_name: savedVendor.business_name || undefined,
+        contact_person: savedVendor.contact_person || undefined,
+        phone: savedVendor.phone || undefined,
+        address: savedVendor.address || undefined,
+        website: savedVendor.website || undefined,
+        description: savedVendor.description || undefined
+      };
+      
+      setVendor(formattedVendor);
+      return formattedVendor;
     } catch (error) {
       console.error('Error saving vendor:', error);
       throw error;

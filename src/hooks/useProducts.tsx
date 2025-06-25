@@ -13,6 +13,27 @@ export interface Product {
   images: string[];
 }
 
+// Type assertions to work around the types sync issue
+type ProductRow = {
+  id: string;
+  vendor_id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  product_images?: {
+    image_url: string;
+    sort_order: number;
+  }[];
+};
+
+type VendorRow = {
+  id: string;
+  user_id: string;
+};
+
 export const useProducts = (showOnlyPublished = false) => {
   const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
@@ -22,7 +43,7 @@ export const useProducts = (showOnlyPublished = false) => {
     try {
       console.log('Fetching products, showOnlyPublished:', showOnlyPublished);
       
-      let query = supabase
+      let query = (supabase as any)
         .from('products')
         .select(`
           *,
@@ -43,7 +64,7 @@ export const useProducts = (showOnlyPublished = false) => {
 
       console.log('Raw products data:', data);
 
-      const formattedProducts: Product[] = data.map(product => ({
+      const formattedProducts: Product[] = (data as ProductRow[]).map(product => ({
         id: product.id,
         vendor_id: product.vendor_id,
         name: product.name,
@@ -75,7 +96,7 @@ export const useProducts = (showOnlyPublished = false) => {
       console.log('Saving product:', productData, 'for user:', user.id);
       
       // First ensure vendor exists
-      let { data: vendor } = await supabase
+      let { data: vendor } = await (supabase as any)
         .from('vendors')
         .select('id')
         .eq('user_id', user.id)
@@ -83,7 +104,7 @@ export const useProducts = (showOnlyPublished = false) => {
 
       if (!vendor) {
         console.log('Creating vendor for user:', user.id);
-        const { data: newVendor, error: vendorError } = await supabase
+        const { data: newVendor, error: vendorError } = await (supabase as any)
           .from('vendors')
           .insert({ user_id: user.id })
           .select('id')
@@ -101,14 +122,14 @@ export const useProducts = (showOnlyPublished = false) => {
       // Save product
       const productToSave = {
         id: productData.id,
-        vendor_id: vendor.id,
+        vendor_id: (vendor as VendorRow).id,
         name: productData.name || '',
         description: productData.description || '',
         price: productData.price || 0,
         status: productData.status || 'draft'
       };
 
-      const { data: product, error } = await supabase
+      const { data: product, error } = await (supabase as any)
         .from('products')
         .upsert(productToSave)
         .select()
@@ -126,19 +147,19 @@ export const useProducts = (showOnlyPublished = false) => {
         console.log('Saving product images:', productData.images);
         
         // Delete existing images
-        await supabase
+        await (supabase as any)
           .from('product_images')
           .delete()
-          .eq('product_id', product.id);
+          .eq('product_id', (product as ProductRow).id);
 
         // Insert new images
         const imageInserts = productData.images.map((url, index) => ({
-          product_id: product.id,
+          product_id: (product as ProductRow).id,
           image_url: url,
           sort_order: index
         }));
 
-        const { error: imageError } = await supabase
+        const { error: imageError } = await (supabase as any)
           .from('product_images')
           .insert(imageInserts);
 
@@ -162,13 +183,13 @@ export const useProducts = (showOnlyPublished = false) => {
       console.log('Deleting product:', productId);
       
       // Delete images first
-      await supabase
+      await (supabase as any)
         .from('product_images')
         .delete()
         .eq('product_id', productId);
 
       // Delete product
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('products')
         .delete()
         .eq('id', productId);
@@ -190,7 +211,7 @@ export const useProducts = (showOnlyPublished = false) => {
     fetchProducts();
 
     // Set up real-time subscription
-    const channel = supabase
+    const channel = (supabase as any)
       .channel('products-changes')
       .on(
         'postgres_changes',
