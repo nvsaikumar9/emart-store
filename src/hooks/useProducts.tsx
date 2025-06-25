@@ -20,6 +20,8 @@ export const useProducts = (showOnlyPublished = false) => {
 
   const fetchProducts = async () => {
     try {
+      console.log('Fetching products, showOnlyPublished:', showOnlyPublished);
+      
       let query = supabase
         .from('products')
         .select(`
@@ -35,8 +37,11 @@ export const useProducts = (showOnlyPublished = false) => {
 
       if (error) {
         console.error('Error fetching products:', error);
+        setProducts([]);
         return;
       }
+
+      console.log('Raw products data:', data);
 
       const formattedProducts: Product[] = data.map(product => ({
         id: product.id,
@@ -50,53 +55,76 @@ export const useProducts = (showOnlyPublished = false) => {
           .map((img: any) => img.image_url) || []
       }));
 
+      console.log('Formatted products:', formattedProducts);
       setProducts(formattedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
+      setProducts([]);
     } finally {
       setLoading(false);
     }
   };
 
   const saveProduct = async (productData: Partial<Product>) => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.error('No user authenticated for product save');
+      throw new Error('User not authenticated');
+    }
 
     try {
-      // First get or create vendor
+      console.log('Saving product:', productData, 'for user:', user.id);
+      
+      // First ensure vendor exists
       let { data: vendor } = await supabase
         .from('vendors')
         .select('id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (!vendor) {
+        console.log('Creating vendor for user:', user.id);
         const { data: newVendor, error: vendorError } = await supabase
           .from('vendors')
           .insert({ user_id: user.id })
           .select('id')
           .single();
         
-        if (vendorError) throw vendorError;
+        if (vendorError) {
+          console.error('Error creating vendor:', vendorError);
+          throw vendorError;
+        }
         vendor = newVendor;
       }
 
+      console.log('Using vendor:', vendor);
+
+      // Save product
+      const productToSave = {
+        id: productData.id,
+        vendor_id: vendor.id,
+        name: productData.name || '',
+        description: productData.description || '',
+        price: productData.price || 0,
+        status: productData.status || 'draft'
+      };
+
       const { data: product, error } = await supabase
         .from('products')
-        .upsert({
-          id: productData.id,
-          vendor_id: vendor.id,
-          name: productData.name || '',
-          description: productData.description || '',
-          price: productData.price || 0,
-          status: productData.status || 'draft'
-        })
+        .upsert(productToSave)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error saving product:', error);
+        throw error;
+      }
 
-      // Handle images
+      console.log('Product saved:', product);
+
+      // Handle images if provided
       if (productData.images && productData.images.length > 0) {
+        console.log('Saving product images:', productData.images);
+        
         // Delete existing images
         await supabase
           .from('product_images')
@@ -110,9 +138,15 @@ export const useProducts = (showOnlyPublished = false) => {
           sort_order: index
         }));
 
-        await supabase
+        const { error: imageError } = await supabase
           .from('product_images')
           .insert(imageInserts);
+
+        if (imageError) {
+          console.error('Error saving images:', imageError);
+        } else {
+          console.log('Images saved successfully');
+        }
       }
 
       await fetchProducts();
@@ -125,12 +159,26 @@ export const useProducts = (showOnlyPublished = false) => {
 
   const deleteProduct = async (productId: string) => {
     try {
+      console.log('Deleting product:', productId);
+      
+      // Delete images first
+      await supabase
+        .from('product_images')
+        .delete()
+        .eq('product_id', productId);
+
+      // Delete product
       const { error } = await supabase
         .from('products')
         .delete()
         .eq('id', productId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting product:', error);
+        throw error;
+      }
+
+      console.log('Product deleted successfully');
       await fetchProducts();
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -152,6 +200,7 @@ export const useProducts = (showOnlyPublished = false) => {
           table: 'products'
         },
         () => {
+          console.log('Products changed, refetching...');
           fetchProducts();
         }
       )

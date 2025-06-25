@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useVendor } from '@/hooks/useVendor';
 import { vendorProfileSchema, type VendorProfileInput } from '@/utils/validation';
-import { Save, Building, User, Phone, MapPin, Globe, FileText, AlertCircle } from 'lucide-react';
+import { Save, Building, User, Phone, MapPin, Globe, FileText, AlertCircle, CheckCircle } from 'lucide-react';
 
 export const VendorProfile = () => {
   const { vendor, loading, createOrUpdateVendor } = useVendor();
@@ -20,9 +20,11 @@ export const VendorProfile = () => {
   });
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (vendor) {
+      console.log('Loading vendor data into form:', vendor);
       setFormData({
         business_name: vendor.business_name || '',
         contact_person: vendor.contact_person || '',
@@ -39,6 +41,10 @@ export const VendorProfile = () => {
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+    // Clear success message when user makes changes
+    if (successMessage) {
+      setSuccessMessage('');
     }
   };
 
@@ -64,11 +70,16 @@ export const VendorProfile = () => {
     }
 
     setSaving(true);
+    setErrors({});
+    setSuccessMessage('');
+    
     try {
+      console.log('Saving vendor profile:', formData);
       await createOrUpdateVendor(formData);
+      setSuccessMessage('Profile saved successfully!');
+      console.log('Profile saved successfully');
     } catch (error) {
       console.error('Error saving vendor profile:', error);
-      // Show user-friendly error message
       setErrors({ general: 'Failed to save profile. Please try again.' });
     } finally {
       setSaving(false);
@@ -101,6 +112,13 @@ export const VendorProfile = () => {
         <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg">
           <AlertCircle className="h-5 w-5 text-red-600" />
           <span className="text-red-700">{errors.general}</span>
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="flex items-center gap-2 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <CheckCircle className="h-5 w-5 text-green-600" />
+          <span className="text-green-700">{successMessage}</span>
         </div>
       )}
 

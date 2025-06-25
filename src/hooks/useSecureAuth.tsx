@@ -5,6 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 // Hardcoded credentials for single vendor
 const VENDOR_EMAIL = 'vendor@demo.com';
 const VENDOR_PASSWORD = 'vendor123';
+// Use a proper UUID format for the vendor ID
+const VENDOR_UUID = '550e8400-e29b-41d4-a716-446655440000';
 
 export const useSecureAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -17,11 +19,11 @@ export const useSecureAuth = () => {
     try {
       // Check hardcoded credentials
       if (email.trim().toLowerCase() === VENDOR_EMAIL && password === VENDOR_PASSWORD) {
-        // Create a mock session for the hardcoded vendor
+        // Create a mock session for the hardcoded vendor with proper UUID
         const mockUser = {
-          id: 'vendor-001',
+          id: VENDOR_UUID,
           email: VENDOR_EMAIL,
-          role: 'vendor'
+          role: 'vendor' as const
         };
         
         // Store in localStorage for persistence
