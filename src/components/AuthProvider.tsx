@@ -37,7 +37,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (storedSession) {
       try {
         const userData = JSON.parse(storedSession);
-        setUser(userData);
+        // Ensure the role is properly typed
+        if (userData && (userData.role === 'vendor' || userData.role === 'customer')) {
+          setUser(userData as User);
+        } else {
+          localStorage.removeItem('vendor_session');
+        }
       } catch (error) {
         console.error('Error parsing stored session:', error);
         localStorage.removeItem('vendor_session');
@@ -50,7 +55,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const result = await signIn(email, password);
       if (result.user) {
-        setUser(result.user);
+        // Ensure the user object has the correct role type
+        const userWithCorrectRole: User = {
+          ...result.user,
+          role: result.user.role as 'vendor' | 'customer'
+        };
+        setUser(userWithCorrectRole);
       }
     } catch (error) {
       // Error is already handled by useSecureAuth hook
