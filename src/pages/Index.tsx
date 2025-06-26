@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from '@/components/AuthProvider';
 import { LoginForm } from '@/components/LoginForm';
 import { Navigation } from '@/components/Navigation';
-import { Dashboard } from '@/components/Dashboard';
+import Dashboard from '@/components/Dashboard';
 import { ProductManager } from '@/components/ProductManager';
 import { VendorProfile } from '@/components/VendorProfile';
 import { PublicStorefront } from '@/components/PublicStorefront';
