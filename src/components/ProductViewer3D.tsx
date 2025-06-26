@@ -230,7 +230,7 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
           }}
           draggable={false}
           loading="eager"
-          fetchpriority="high"
+          fetchPriority="high"
         />
         
         {/* Frame indicator */}
