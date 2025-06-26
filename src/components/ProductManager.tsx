@@ -13,6 +13,7 @@ export const ProductManager = () => {
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
 
   const handleCreateProduct = () => {
     const newProduct: Partial<Product> = {
@@ -34,7 +35,7 @@ export const ProductManager = () => {
       await saveProduct(editingProduct);
       toast({
         title: "Success!",
-        description: "Product has been successfully added to the product management screen.",
+        description: "Product has been successfully saved.",
       });
       setEditingProduct(null);
     } catch (error) {
@@ -98,18 +99,47 @@ export const ProductManager = () => {
     });
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Convert file to data URL (base64)
+  const fileToDataURL = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0 || !editingProduct) return;
 
-    const imageUrls = files.map((file) => {
-      return URL.createObjectURL(file);
-    });
+    setUploadingImages(true);
     
-    setEditingProduct({
-      ...editingProduct,
-      images: [...(editingProduct.images || []), ...imageUrls].slice(0, 150)
-    });
+    try {
+      // Convert files to data URLs
+      const dataURLs = await Promise.all(
+        files.map(file => fileToDataURL(file))
+      );
+      
+      setEditingProduct({
+        ...editingProduct,
+        images: [...(editingProduct.images || []), ...dataURLs].slice(0, 150)
+      });
+
+      toast({
+        title: "Images Uploaded",
+        description: `${files.length} image(s) added successfully.`,
+      });
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      toast({
+        title: "Upload Error",
+        description: "Failed to upload images. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingImages(false);
+    }
   };
 
   const removeImage = (index: number) => {
@@ -146,7 +176,7 @@ export const ProductManager = () => {
             </Button>
             <Button 
               onClick={handleSaveProduct}
-              disabled={saving}
+              disabled={saving || uploadingImages}
               className="btn-visible"
             >
               {saving ? 'Saving...' : 'Save Product'}
@@ -249,15 +279,16 @@ export const ProductManager = () => {
                     onChange={handleImageUpload}
                     className="hidden"
                     id="image-upload"
+                    disabled={uploadingImages || (editingProduct.images || []).length >= 150}
                   />
                   <Button
                     variant="outline"
                     onClick={() => document.getElementById('image-upload')?.click()}
                     className="w-full h-12 border-dashed border-2 btn-outline-visible"
-                    disabled={(editingProduct.images || []).length >= 150}
+                    disabled={uploadingImages || (editingProduct.images || []).length >= 150}
                   >
                     <Upload className="h-5 w-5 mr-2" />
-                    Upload Images (Max 150)
+                    {uploadingImages ? 'Uploading Images...' : 'Upload Images (Max 150)'}
                   </Button>
                   
                   {editingProduct.images && editingProduct.images.length > 0 && (
