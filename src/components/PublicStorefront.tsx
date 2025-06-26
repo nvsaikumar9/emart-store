@@ -1,18 +1,24 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProductViewer3D } from './ProductViewer3D';
+import { ImagePreloader } from './ImagePreloader';
 import { useProducts, Product } from '@/hooks/useProducts';
 import { useVendor } from '@/hooks/useVendor';
 import { Eye, Phone, MapPin, Globe, User, Building, Hash, Copy } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 export const PublicStorefront = () => {
-  const { products, loading } = useProducts(true); // Only show published products
+  const { products, loading } = useProducts(true);
   const { vendor } = useVendor();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
+  // Collect all images for preloading
+  const allImages = React.useMemo(() => {
+    return products.flatMap(product => product.images).filter(Boolean);
+  }, [products]);
+
   // Get vendor info or use defaults
   const vendorInfo = {
     businessName: vendor?.business_name || "Tech Gadgets Store",
@@ -48,6 +54,9 @@ export const PublicStorefront = () => {
   if (selectedProduct) {
     return (
       <div className="space-y-8">
+        {/* Preload images for instant display */}
+        <ImagePreloader images={selectedProduct.images} priority={true} />
+        
         <Button 
           variant="outline" 
           onClick={() => setSelectedProduct(null)}
@@ -215,6 +224,9 @@ export const PublicStorefront = () => {
 
   return (
     <div className="space-y-12">
+      {/* Preload all product images for instant display */}
+      <ImagePreloader images={allImages} priority={true} />
+      
       <div className="text-center py-20 gradient-primary text-white rounded-3xl shadow-2xl">
         <h1 className="text-6xl font-black mb-6">
           3D Product Showcase
