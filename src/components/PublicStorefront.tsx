@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { ProductViewer3D } from './ProductViewer3D';
 import { useProducts, Product } from '@/hooks/useProducts';
 import { useVendor } from '@/hooks/useVendor';
-import { Eye, Phone, MapPin, Globe, User, Building } from 'lucide-react';
+import { Eye, Phone, MapPin, Globe, User, Building, Hash, Copy } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 export const PublicStorefront = () => {
   const { products, loading } = useProducts(true); // Only show published products
@@ -26,6 +27,14 @@ export const PublicStorefront = () => {
     if (vendorInfo.phone) {
       window.open(`tel:${vendorInfo.phone}`, '_blank');
     }
+  };
+
+  const copyProductId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    toast({
+      title: "Copied!",
+      description: "Product ID copied to clipboard.",
+    });
   };
 
   if (loading) {
@@ -59,6 +68,28 @@ export const PublicStorefront = () => {
             <Card className="gradient-card shadow-2xl">
               <CardContent className="p-8">
                 <div className="space-y-6">
+                  {/* Product ID Display */}
+                  <Card className="bg-blue-50 border-blue-200">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Hash className="h-4 w-4 text-blue-600" />
+                          <span className="text-sm font-medium text-blue-800">Product ID:</span>
+                          <span className="text-sm font-mono text-blue-900">{selectedProduct.id}</span>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => copyProductId(selectedProduct.id)}
+                          className="text-blue-600 border-blue-300 hover:bg-blue-100"
+                        >
+                          <Copy className="h-3 w-3 mr-1" />
+                          Copy
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+
                   <div>
                     <h1 className="text-4xl font-bold mb-4 text-gray-800">{selectedProduct.name}</h1>
                     <div className="price-text text-2xl font-black">
@@ -206,17 +237,11 @@ export const PublicStorefront = () => {
               <Card key={product.id} className={`${cardClass} shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 group`}>
                 <CardContent className="p-0">
                   <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-t-3xl overflow-hidden relative">
-                    {product.images.length > 0 ? (
-                      <img
-                        src={product.images[0]}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-500 text-xl font-bold">
-                        Product Image
-                      </div>
-                    )}
+                    <ProductViewer3D
+                      images={product.images}
+                      productName={product.name}
+                      className="w-full h-full rounded-none"
+                    />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center">
                       <Button
                         className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 btn-visible py-3 px-6 shadow-lg"
@@ -229,6 +254,22 @@ export const PublicStorefront = () => {
                   </div>
                   
                   <div className="p-8">
+                    {/* Product ID Display */}
+                    <div className="flex items-center justify-between mb-3 p-2 bg-gray-50 rounded">
+                      <div className="flex items-center space-x-1">
+                        <Hash className="h-3 w-3 text-gray-500" />
+                        <span className="text-xs text-gray-600 font-mono">{product.id.slice(0, 8)}...</span>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => copyProductId(product.id)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+
                     <h3 className="font-black text-2xl mb-4 text-gray-800">{product.name}</h3>
                     <p className="text-gray-600 mb-6 line-clamp-2 leading-relaxed">{product.description}</p>
                     <div className="flex items-center justify-between">

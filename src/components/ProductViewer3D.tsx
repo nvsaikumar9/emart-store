@@ -21,8 +21,41 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
   const [startX, setStartX] = useState(0);
   const [scale, setScale] = useState(1);
   const [direction, setDirection] = useState(1); // 1 for forward, -1 for reverse
+  const [imagesLoaded, setImagesLoaded] = useState<{ [key: string]: boolean }>({});
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Preload all images to ensure they persist
+  useEffect(() => {
+    if (images.length === 0) return;
+
+    const loadImages = async () => {
+      const loadPromises = images.map((src, index) => {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            setImagesLoaded(prev => ({ ...prev, [index]: true }));
+            resolve(src);
+          };
+          img.onerror = () => {
+            console.error(`Failed to load image: ${src}`);
+            setImagesLoaded(prev => ({ ...prev, [index]: false }));
+            reject(src);
+          };
+          img.src = src;
+        });
+      });
+
+      try {
+        await Promise.allSettled(loadPromises);
+        console.log(`Loaded ${images.length} images for ${productName}`);
+      } catch (error) {
+        console.error('Error loading images:', error);
+      }
+    };
+
+    loadImages();
+  }, [images, productName]);
 
   useEffect(() => {
     if (isPlaying && images.length > 1) {
@@ -122,6 +155,9 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
     );
   }
 
+  const currentImage = images[currentFrame];
+  const isCurrentImageLoaded = imagesLoaded[currentFrame] !== false;
+
   return (
     <Card className={`relative overflow-hidden gradient-card border-0 shadow-lg ${className}`}>
       <div 
@@ -132,17 +168,31 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        <img
-          src={images[currentFrame] || '/placeholder.svg'}
-          alt={`${productName} - Frame ${currentFrame + 1}`}
-          className="max-w-full max-h-full object-contain transition-transform duration-200"
-          style={{ 
-            transform: `scale(${scale})`,
-            userSelect: 'none',
-            pointerEvents: 'none'
-          }}
-          draggable={false}
-        />
+        {isCurrentImageLoaded ? (
+          <img
+            src={currentImage}
+            alt={`${productName} - Frame ${currentFrame + 1}`}
+            className="max-w-full max-h-full object-contain transition-transform duration-200"
+            style={{ 
+              transform: `scale(${scale})`,
+              userSelect: 'none',
+              pointerEvents: 'none'
+            }}
+            draggable={false}
+            loading="eager"
+            onError={(e) => {
+              console.error(`Failed to display image: ${currentImage}`);
+              setImagesLoaded(prev => ({ ...prev, [currentFrame]: false }));
+            }}
+          />
+        ) : (
+          <div className="flex items-center justify-center text-gray-400 w-full h-full">
+            <div className="text-center">
+              <RotateCw className="h-12 w-12 mx-auto mb-2 animate-spin" />
+              <p>Loading image...</p>
+            </div>
+          </div>
+        )}
         
         {/* Enhanced frame indicator */}
         <div className="absolute top-4 left-4 gradient-primary text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">

@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ProductViewer3D } from './ProductViewer3D';
 import { useProducts, Product } from '@/hooks/useProducts';
-import { Plus, Upload, Trash2, Eye, Package, DollarSign, FileText, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Upload, Trash2, Eye, Package, DollarSign, FileText, CheckCircle, XCircle, Copy, Hash } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 export const ProductManager = () => {
   const { products, loading, saveProduct, deleteProduct, publishProduct, unpublishProduct } = useProducts();
@@ -31,9 +32,18 @@ export const ProductManager = () => {
     setSaving(true);
     try {
       await saveProduct(editingProduct);
+      toast({
+        title: "Success!",
+        description: "Product has been successfully added to the product management screen.",
+      });
       setEditingProduct(null);
     } catch (error) {
       console.error('Error saving product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save product. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setSaving(false);
     }
@@ -42,14 +52,27 @@ export const ProductManager = () => {
   const handleDeleteProduct = async (id: string) => {
     try {
       await deleteProduct(id);
+      toast({
+        title: "Product Deleted",
+        description: "Product has been successfully deleted.",
+      });
     } catch (error) {
       console.error('Error deleting product:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete product. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
   const handlePublishProduct = async (id: string) => {
     try {
       await publishProduct(id);
+      toast({
+        title: "Product Published",
+        description: "Product is now visible in the storefront.",
+      });
     } catch (error) {
       console.error('Error publishing product:', error);
     }
@@ -58,9 +81,21 @@ export const ProductManager = () => {
   const handleUnpublishProduct = async (id: string) => {
     try {
       await unpublishProduct(id);
+      toast({
+        title: "Product Unpublished",
+        description: "Product has been removed from the storefront.",
+      });
     } catch (error) {
       console.error('Error unpublishing product:', error);
     }
+  };
+
+  const copyProductId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    toast({
+      title: "Copied!",
+      description: "Product ID copied to clipboard.",
+    });
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,6 +160,30 @@ export const ProductManager = () => {
             </Button>
           </div>
         </div>
+
+        {/* Show Product ID if editing existing product */}
+        {editingProduct.id && (
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Hash className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-800">Product ID:</span>
+                  <span className="text-sm font-mono text-blue-900">{editingProduct.id}</span>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => copyProductId(editingProduct.id!)}
+                  className="text-blue-600 border-blue-300 hover:bg-blue-100"
+                >
+                  <Copy className="h-3 w-3 mr-1" />
+                  Copy
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="gradient-card shadow-lg">
@@ -276,19 +335,29 @@ export const ProductManager = () => {
           <Card key={product.id} className="gradient-card shadow-lg hover:shadow-xl transition-shadow">
             <CardContent className="p-0">
               <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 rounded-t-lg mb-4 overflow-hidden">
-                {product.images.length > 0 ? (
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    <Package className="h-16 w-16" />
-                  </div>
-                )}
+                <ProductViewer3D
+                  images={product.images}
+                  productName={product.name}
+                  className="w-full h-full rounded-none"
+                />
               </div>
               <div className="p-4">
+                {/* Product ID Display */}
+                <div className="flex items-center justify-between mb-2 p-2 bg-gray-50 rounded">
+                  <div className="flex items-center space-x-1">
+                    <Hash className="h-3 w-3 text-gray-500" />
+                    <span className="text-xs text-gray-600 font-mono">{product.id.slice(0, 8)}...</span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => copyProductId(product.id)}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                </div>
+
                 <h3 className="font-bold text-lg mb-2 text-gray-800">{product.name}</h3>
                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
                 <div className="price-text text-lg font-bold mb-4">
