@@ -98,18 +98,38 @@ export const ProductManager = () => {
     });
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const convertFileToDataURL = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0 || !editingProduct) return;
 
-    const imageUrls = files.map((file) => {
-      return URL.createObjectURL(file);
-    });
-    
-    setEditingProduct({
-      ...editingProduct,
-      images: [...(editingProduct.images || []), ...imageUrls].slice(0, 150)
-    });
+    try {
+      console.log('Converting uploaded files to data URLs...');
+      const dataUrls = await Promise.all(
+        files.map(file => convertFileToDataURL(file))
+      );
+      
+      console.log('Successfully converted files to data URLs');
+      setEditingProduct({
+        ...editingProduct,
+        images: [...(editingProduct.images || []), ...dataUrls].slice(0, 150)
+      });
+    } catch (error) {
+      console.error('Error converting files to data URLs:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process images. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const removeImage = (index: number) => {
