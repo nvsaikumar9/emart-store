@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -77,14 +76,14 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
     return images.filter(img => img && img.trim() !== '');
   }, [images]);
 
-  // Calculate adaptive animation speed based on number of images
+  // Calculate adaptive animation speed based on number of images - doubled for slower animation
   const animationSpeed = useMemo(() => {
     const imageCount = validImages.length;
-    if (imageCount <= 4) return 300; // Slower for few images
-    if (imageCount <= 10) return 200;
-    if (imageCount <= 20) return 150;
-    if (imageCount <= 40) return 100;
-    return 80; // Fastest for many images (40+)
+    if (imageCount <= 4) return 600; // Slower for few images (doubled from 300ms)
+    if (imageCount <= 10) return 400; // Doubled from 200ms
+    if (imageCount <= 20) return 300; // Doubled from 150ms
+    if (imageCount <= 40) return 200; // Doubled from 100ms
+    return 160; // Doubled from 80ms for many images (40+)
   }, [validImages.length]);
 
   // Preload all images immediately when component mounts or images change
