@@ -8,8 +8,8 @@ import { LogIn, Mail, Lock, AlertCircle } from 'lucide-react';
 
 export const LoginForm = () => {
   const { login, loading, authError, clearAuthError } = useAuth();
-  const [email, setEmail] = useState('vendor@demo.com');
-  const [password, setPassword] = useState('vendor123');
+  const [email, setEmail] = useState(''); // Removed pre-filled email
+  const [password, setPassword] = useState(''); // Removed pre-filled password
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
