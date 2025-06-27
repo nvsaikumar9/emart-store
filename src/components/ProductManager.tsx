@@ -150,16 +150,17 @@ export const ProductManager = () => {
 
   if (editingProduct) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold text-gray-800">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
             {editingProduct.id ? 'Edit Product' : 'Create Product'}
           </h2>
-          <div className="space-x-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               onClick={() => setShowPreview(!showPreview)}
-              className="btn-outline-visible"
+              className="btn-outline-visible text-sm"
+              size="sm"
             >
               <Eye className="h-4 w-4 mr-2" />
               {showPreview ? 'Hide Preview' : 'Show Preview'}
@@ -167,14 +168,16 @@ export const ProductManager = () => {
             <Button 
               onClick={handleSaveProduct}
               disabled={saving}
-              className="btn-visible"
+              className="btn-visible text-sm"
+              size="sm"
             >
               {saving ? 'Saving...' : 'Save Product'}
             </Button>
             <Button 
               variant="outline" 
               onClick={() => setEditingProduct(null)}
-              className="btn-outline-visible"
+              className="btn-outline-visible text-sm"
+              size="sm"
             >
               Cancel
             </Button>
@@ -184,18 +187,18 @@ export const ProductManager = () => {
         {/* Show Product ID if editing existing product */}
         {editingProduct.id && (
           <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center space-x-2">
                   <Hash className="h-4 w-4 text-blue-600" />
                   <span className="text-sm font-medium text-blue-800">Product ID:</span>
-                  <span className="text-sm font-mono text-blue-900">{editingProduct.id}</span>
+                  <span className="text-sm font-mono text-blue-900 break-all sm:break-normal">{editingProduct.id}</span>
                 </div>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => copyProductId(editingProduct.id!)}
-                  className="text-blue-600 border-blue-300 hover:bg-blue-100"
+                  className="text-blue-600 border-blue-300 hover:bg-blue-100 self-start sm:self-auto"
                 >
                   <Copy className="h-3 w-3 mr-1" />
                   Copy
@@ -205,15 +208,15 @@ export const ProductManager = () => {
           </Card>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <Card className="gradient-card shadow-lg">
             <CardHeader className="gradient-primary text-white">
-              <CardTitle className="flex items-center">
+              <CardTitle className="flex items-center text-lg sm:text-xl">
                 <Package className="h-5 w-5 mr-2" />
                 Product Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-6">
+            <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               <div>
                 <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                   <Package className="h-4 w-4 mr-2" />
@@ -223,7 +226,7 @@ export const ProductManager = () => {
                   value={editingProduct.name || ''}
                   onChange={(e) => setEditingProduct({...editingProduct, name: e.target.value})}
                   placeholder="Enter product name"
-                  className="h-12 border-gray-200 focus:border-blue-500"
+                  className="h-10 sm:h-12 border-gray-200 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
               
@@ -237,7 +240,7 @@ export const ProductManager = () => {
                   onChange={(e) => setEditingProduct({...editingProduct, description: e.target.value})}
                   placeholder="Enter product description"
                   rows={4}
-                  className="border-gray-200 focus:border-blue-500"
+                  className="border-gray-200 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
               
@@ -252,7 +255,7 @@ export const ProductManager = () => {
                   onChange={(e) => setEditingProduct({...editingProduct, price: parseFloat(e.target.value) || 0})}
                   placeholder="0.00"
                   step="0.01"
-                  className="h-12 border-gray-200 focus:border-blue-500"
+                  className="h-10 sm:h-12 border-gray-200 focus:border-blue-500 text-sm sm:text-base"
                 />
               </div>
 
@@ -273,29 +276,29 @@ export const ProductManager = () => {
                   <Button
                     variant="outline"
                     onClick={() => document.getElementById('image-upload')?.click()}
-                    className="w-full h-12 border-dashed border-2 btn-outline-visible"
+                    className="w-full h-10 sm:h-12 border-dashed border-2 btn-outline-visible text-sm"
                     disabled={(editingProduct.images || []).length >= 150}
                   >
-                    <Upload className="h-5 w-5 mr-2" />
+                    <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                     Upload Images (Max 150)
                   </Button>
                   
                   {editingProduct.images && editingProduct.images.length > 0 && (
-                    <div className="grid grid-cols-4 gap-3 mt-4 max-h-60 overflow-y-auto">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3 mt-4 max-h-48 sm:max-h-60 overflow-y-auto">
                       {editingProduct.images.map((image, index) => (
                         <div key={index} className="relative group">
                           <img
                             src={image}
                             alt={`Product image ${index + 1}`}
-                            className="w-full h-20 object-cover rounded-lg border-2 border-gray-200"
+                            className="w-full h-16 sm:h-20 object-cover rounded-lg border-2 border-gray-200"
                           />
                           <Button
                             size="sm"
                             variant="destructive"
-                            className="absolute -top-2 -right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
+                            className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 h-5 w-5 sm:h-6 sm:w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-full text-xs"
                             onClick={() => removeImage(index)}
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="h-2 w-2 sm:h-3 sm:w-3" />
                           </Button>
                           <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-1 rounded">
                             {index + 1}
@@ -312,20 +315,20 @@ export const ProductManager = () => {
           {showPreview && (
             <Card className="gradient-card shadow-lg">
               <CardHeader className="gradient-secondary text-white">
-                <CardTitle className="flex items-center">
+                <CardTitle className="flex items-center text-lg sm:text-xl">
                   <Eye className="h-5 w-5 mr-2" />
                   3D Preview
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-4 sm:p-6">
                 <ProductViewer3D
                   images={editingProduct.images || []}
                   productName={editingProduct.name || 'Product Preview'}
                 />
-                <div className="mt-6 space-y-3 p-4 bg-gray-50 rounded-lg">
-                  <h3 className="font-bold text-xl text-gray-800">{editingProduct.name || 'Product Name'}</h3>
+                <div className="mt-4 sm:mt-6 space-y-2 sm:space-y-3 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-bold text-lg sm:text-xl text-gray-800">{editingProduct.name || 'Product Name'}</h3>
                   <p className="text-gray-600 text-sm">{editingProduct.description || 'Product description will appear here...'}</p>
-                  <div className="price-text text-xl font-bold">
+                  <div className="price-text text-lg sm:text-xl font-bold">
                     ₹{(editingProduct.price || 0).toFixed(2)}
                   </div>
                 </div>
@@ -338,9 +341,9 @@ export const ProductManager = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-800">Product Management</h2>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Product Management</h2>
         <Button 
           onClick={handleCreateProduct}
           className="btn-visible"
@@ -350,7 +353,7 @@ export const ProductManager = () => {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {products.map((product) => (
           <Card key={product.id} className="gradient-card shadow-lg hover:shadow-xl transition-shadow">
             <CardContent className="p-0">
@@ -361,7 +364,7 @@ export const ProductManager = () => {
                   className="w-full h-full rounded-none"
                 />
               </div>
-              <div className="p-4">
+              <div className="p-3 sm:p-4">
                 {/* Product ID Display */}
                 <div className="flex items-center justify-between mb-2 p-2 bg-gray-50 rounded">
                   <div className="flex items-center space-x-1">
@@ -378,14 +381,14 @@ export const ProductManager = () => {
                   </Button>
                 </div>
 
-                <h3 className="font-bold text-lg mb-2 text-gray-800">{product.name}</h3>
+                <h3 className="font-bold text-base sm:text-lg mb-2 text-gray-800 line-clamp-2">{product.name}</h3>
                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
-                <div className="price-text text-lg font-bold mb-4">
+                <div className="price-text text-base sm:text-lg font-bold mb-4">
                   ₹{product.price.toFixed(2)}
                 </div>
                 
                 <div className="flex items-center justify-between mb-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${
                     product.status === 'published' 
                       ? 'bg-green-100 text-green-800' 
                       : 'bg-yellow-100 text-yellow-800'
@@ -399,8 +402,8 @@ export const ProductManager = () => {
                       onClick={() => handleUnpublishProduct(product.id)}
                       className="btn-outline-visible text-xs"
                     >
-                      <XCircle className="h-4 w-4 mr-1" />
-                      Unpublish
+                      <XCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                      <span className="hidden sm:inline">Unpublish</span>
                     </Button>
                   ) : (
                     <Button
@@ -408,18 +411,18 @@ export const ProductManager = () => {
                       onClick={() => handlePublishProduct(product.id)}
                       className="btn-visible text-xs"
                     >
-                      <CheckCircle className="h-4 w-4 mr-1" />
-                      Publish
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                      <span className="hidden sm:inline">Publish</span>
                     </Button>
                   )}
                 </div>
                 
-                <div className="space-x-2">
+                <div className="flex gap-2">
                   <Button
                     size="sm"
                     variant="outline"
                     onClick={() => setEditingProduct(product)}
-                    className="btn-outline-visible text-xs"
+                    className="btn-outline-visible text-xs flex-1"
                   >
                     Edit
                   </Button>
@@ -427,8 +430,9 @@ export const ProductManager = () => {
                     size="sm"
                     variant="destructive"
                     onClick={() => handleDeleteProduct(product.id)}
+                    className="px-2"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
               </div>

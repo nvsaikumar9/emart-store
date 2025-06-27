@@ -77,6 +77,16 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
     return images.filter(img => img && img.trim() !== '');
   }, [images]);
 
+  // Calculate adaptive animation speed based on number of images
+  const animationSpeed = useMemo(() => {
+    const imageCount = validImages.length;
+    if (imageCount <= 4) return 300; // Slower for few images
+    if (imageCount <= 10) return 200;
+    if (imageCount <= 20) return 150;
+    if (imageCount <= 40) return 100;
+    return 80; // Fastest for many images (40+)
+  }, [validImages.length]);
+
   // Preload all images immediately when component mounts or images change
   useEffect(() => {
     if (validImages.length === 0) {
@@ -104,7 +114,7 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
     loadImages();
   }, [validImages, productName]);
 
-  // Auto-play animation effect
+  // Auto-play animation effect with adaptive speed
   useEffect(() => {
     if (isPlaying && validImages.length > 1 && isReady) {
       intervalRef.current = setInterval(() => {
@@ -114,7 +124,7 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
           if (nextFrame < 0) return validImages.length - 1;
           return nextFrame;
         });
-      }, 100); // Faster animation for smoother experience
+      }, animationSpeed); // Use adaptive speed
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -126,7 +136,7 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
         clearInterval(intervalRef.current);
       }
     };
-  }, [isPlaying, validImages.length, direction, isReady]);
+  }, [isPlaying, validImages.length, direction, isReady, animationSpeed]);
 
   // Optimized mouse handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -154,6 +164,35 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
   }, [isDragging, validImages.length, startX]);
 
   const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Touch handlers for mobile
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (validImages.length <= 1) return;
+    setIsDragging(true);
+    setStartX(e.touches[0].clientX);
+    setIsPlaying(false);
+  }, [validImages.length]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging || validImages.length <= 1) return;
+
+    const deltaX = e.touches[0].clientX - startX;
+    const sensitivity = 2;
+    const frameChange = Math.floor(Math.abs(deltaX) / sensitivity);
+
+    if (frameChange > 0) {
+      const moveDirection = deltaX > 0 ? 1 : -1;
+      setCurrentFrame((prev) => {
+        const newFrame = prev + (moveDirection * frameChange);
+        return ((newFrame % validImages.length) + validImages.length) % validImages.length;
+      });
+      setStartX(e.touches[0].clientX);
+    }
+  }, [isDragging, validImages.length, startX]);
+
+  const handleTouchEnd = useCallback(() => {
     setIsDragging(false);
   }, []);
 
@@ -195,12 +234,12 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
   // Show placeholder if no images
   if (validImages.length === 0) {
     return (
-      <Card className={`p-8 text-center gradient-card border-0 shadow-lg ${className}`}>
+      <Card className={`p-6 sm:p-8 text-center gradient-card border-0 shadow-lg ${className}`}>
         <div className="text-gray-400 space-y-4">
-          <div className="w-24 h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
-            <RotateCw className="h-12 w-12" />
+          <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+            <RotateCw className="h-8 w-8 sm:h-12 sm:w-12" />
           </div>
-          <p>Upload images to see 360° view</p>
+          <p className="text-sm">Upload images to see 360° view</p>
         </div>
       </Card>
     );
@@ -212,11 +251,14 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
     <Card className={`relative overflow-hidden gradient-card border-0 shadow-lg ${className}`}>
       <div 
         ref={containerRef}
-        className="relative bg-white h-96 flex items-center justify-center cursor-grab active:cursor-grabbing"
+        className="relative bg-white h-64 sm:h-96 flex items-center justify-center cursor-grab active:cursor-grabbing touch-pan-x"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Always show the current image immediately - no loading states */}
         <img
@@ -234,76 +276,76 @@ export const ProductViewer3D: React.FC<ProductViewer3DProps> = ({
         />
         
         {/* Frame indicator */}
-        <div className="absolute top-4 left-4 gradient-primary text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+        <div className="absolute top-2 sm:top-4 left-2 sm:left-4 gradient-primary text-white px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium shadow-lg">
           {currentFrame + 1} / {validImages.length}
           {validImages.length > 1 && (
-            <span className="ml-2 text-xs opacity-80">
+            <span className="ml-1 sm:ml-2 text-xs opacity-80">
               {isPlaying ? (direction === 1 ? '▶' : '◀') : '⏸'}
             </span>
           )}
         </div>
 
-        {/* Enhanced controls */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-3 shadow-lg">
+        {/* Enhanced controls - Mobile optimized */}
+        <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-1 sm:space-x-2 bg-white bg-opacity-95 backdrop-blur-sm rounded-xl p-2 sm:p-3 shadow-lg">
           {validImages.length > 1 && (
             <>
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={prevFrame}
-                className="text-blue-600 hover:bg-blue-50"
+                className="text-blue-600 hover:bg-blue-50 h-8 w-8 sm:h-10 sm:w-10 p-0"
               >
-                <RotateCcw className="h-4 w-4" />
+                <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={toggleAutoplay}
-                className="text-blue-600 hover:bg-blue-50"
+                className="text-blue-600 hover:bg-blue-50 h-8 w-8 sm:h-10 sm:w-10 p-0"
               >
-                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                {isPlaying ? <Pause className="h-3 w-3 sm:h-4 sm:w-4" /> : <Play className="h-3 w-3 sm:h-4 sm:w-4" />}
               </Button>
               <Button
                 size="sm"
                 variant="ghost"
                 onClick={nextFrame}
-                className="text-blue-600 hover:bg-blue-50"
+                className="text-blue-600 hover:bg-blue-50 h-8 w-8 sm:h-10 sm:w-10 p-0"
               >
-                <RotateCw className="h-4 w-4" />
+                <RotateCw className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
-              <div className="w-px h-6 bg-gray-300"></div>
+              <div className="w-px h-4 sm:h-6 bg-gray-300"></div>
             </>
           )}
           <Button
             size="sm"
             variant="ghost"
             onClick={zoomOut}
-            className="text-gray-600 hover:bg-gray-50"
+            className="text-gray-600 hover:bg-gray-50 h-8 w-8 sm:h-10 sm:w-10 p-0"
           >
-            <ZoomOut className="h-4 w-4" />
+            <ZoomOut className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
           <Button
             size="sm"
             variant="ghost"
             onClick={zoomIn}
-            className="text-gray-600 hover:bg-gray-50"
+            className="text-gray-600 hover:bg-gray-50 h-8 w-8 sm:h-10 sm:w-10 p-0"
           >
-            <ZoomIn className="h-4 w-4" />
+            <ZoomIn className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
           <Button
             size="sm"
             variant="ghost"
             onClick={resetView}
-            className="text-gray-600 hover:bg-gray-50"
+            className="text-gray-600 hover:bg-gray-50 h-8 w-8 sm:h-10 sm:w-10 p-0"
           >
-            <RotateCw className="h-4 w-4" />
+            <RotateCw className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </div>
       </div>
       
       {/* Progress bar */}
       {validImages.length > 1 && (
-        <div className="absolute bottom-0 left-0 w-full h-2 bg-gray-100">
+        <div className="absolute bottom-0 left-0 w-full h-1 sm:h-2 bg-gray-100">
           <div 
             className="h-full gradient-primary transition-all duration-200 rounded-r"
             style={{ width: `${((currentFrame + 1) / validImages.length) * 100}%` }}
