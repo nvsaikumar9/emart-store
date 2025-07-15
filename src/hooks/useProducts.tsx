@@ -10,6 +10,7 @@ export interface Product {
   description?: string;
   price: number;
   status: 'draft' | 'published';
+  minimum_lot: number;
   images: string[];
 }
 
@@ -21,6 +22,7 @@ type ProductRow = {
   description: string | null;
   price: number;
   status: string;
+  minimum_lot: number;
   created_at: string;
   updated_at: string;
   product_images?: {
@@ -85,6 +87,7 @@ export const useProducts = (showOnlyPublished = false) => {
         description: product.description,
         price: product.price,
         status: product.status as 'draft' | 'published',
+        minimum_lot: product.minimum_lot || 1,
         images: product.product_images
           ?.sort((a: any, b: any) => a.sort_order - b.sort_order)
           .map((img: any) => img.image_url) || []
@@ -140,6 +143,7 @@ export const useProducts = (showOnlyPublished = false) => {
         name: productData.name || '',
         description: productData.description || '',
         price: productData.price || 0,
+        minimum_lot: productData.minimum_lot || 1,
         status: productData.status || 'draft'
       };
 

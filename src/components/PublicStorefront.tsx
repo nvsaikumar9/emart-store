@@ -2,17 +2,42 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { ProductViewer3D } from './ProductViewer3D';
 import { ImagePreloader } from './ImagePreloader';
 import { useProducts, Product } from '@/hooks/useProducts';
 import { useVendor } from '@/hooks/useVendor';
-import { Eye, Phone, MapPin, Globe, User, Building, Hash, Copy } from 'lucide-react';
+import { Eye, Phone, MapPin, Globe, User, Building, Hash, Copy, ShoppingCart, Search, Filter, X } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 export const PublicStorefront = () => {
   const { products, loading } = useProducts(true);
   const { vendor } = useVendor();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [minPrice, setMinPrice] = useState<number | ''>('');
+  const [maxPrice, setMaxPrice] = useState<number | ''>('');
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Filter products based on search and price range
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = searchQuery === '' || 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (product.description && product.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesMinPrice = minPrice === '' || product.price >= minPrice;
+    const matchesMaxPrice = maxPrice === '' || product.price <= maxPrice;
+    
+    return matchesSearch && matchesMinPrice && matchesMaxPrice;
+  });
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setMinPrice('');
+    setMaxPrice('');
+  };
   
   // Collect all images for preloading
   const allImages = React.useMemo(() => {
@@ -101,8 +126,16 @@ export const PublicStorefront = () => {
 
                   <div>
                     <h1 className="text-4xl font-bold mb-4 text-gray-800">{selectedProduct.name}</h1>
-                    <div className="price-text text-2xl font-black">
-                      ₹{selectedProduct.price.toLocaleString('en-IN')}
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="price-text text-2xl font-black">
+                        ₹{selectedProduct.price.toLocaleString('en-IN')}
+                      </div>
+                      {selectedProduct.minimum_lot && selectedProduct.minimum_lot > 1 && (
+                        <div className="flex items-center text-sm text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
+                          <ShoppingCart className="h-4 w-4 mr-1" />
+                          Minimum Order: {selectedProduct.minimum_lot} units
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -242,8 +275,93 @@ export const PublicStorefront = () => {
           <p className="text-xl text-gray-500">Products will appear here once vendors publish them.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {products.map((product, index) => {
+        <>
+          {/* Search and Filter Section */}
+          <Card className="p-6">
+            <div className="space-y-4">
+              {/* Search Bar */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search products by name or description..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+
+              {/* Filter Toggle and Price Range */}
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="btn-outline-visible"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Price Filter
+                </Button>
+
+                {showFilters && (
+                  <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium">Min Price:</label>
+                      <Input
+                        type="number"
+                        placeholder="₹0"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                        className="w-24"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium">Max Price:</label>
+                      <Input
+                        type="number"
+                        placeholder="₹∞"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                        className="w-24"
+                      />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearFilters}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Clear
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {/* Results Count */}
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <span>
+                  Showing {filteredProducts.length} of {products.length} products
+                </span>
+                {(searchQuery || minPrice !== '' || maxPrice !== '') && (
+                  <span className="text-blue-600">Filters applied</span>
+                )}
+              </div>
+            </div>
+          </Card>
+
+          {/* No Results Message */}
+          {filteredProducts.length === 0 && products.length > 0 && (
+            <Card className="p-8 text-center">
+              <div className="text-gray-500">
+                <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <h3 className="text-lg font-medium mb-2">No products found</h3>
+                <p>Try changing your search or filter criteria.</p>
+              </div>
+            </Card>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {filteredProducts.map((product, index) => {
             const cardClass = index === 0 ? 'card-smartphone' : index === 1 ? 'card-laptop' : 'card-headphones';
             return (
               <Card key={product.id} className={`${cardClass} shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 group`}>
@@ -282,26 +400,38 @@ export const PublicStorefront = () => {
                       </Button>
                     </div>
 
-                    <h3 className="font-black text-2xl mb-4 text-gray-800">{product.name}</h3>
-                    <p className="text-gray-600 mb-6 line-clamp-2 leading-relaxed">{product.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="price-text text-xl font-black">
-                        ₹{product.price.toLocaleString('en-IN')}
-                      </div>
-                      <Button
-                        onClick={() => setSelectedProduct(product)}
-                        className="btn-visible py-2 px-6 shadow-lg"
-                      >
-                        View Details
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
+                     <h3 className="font-black text-2xl mb-4 text-gray-800">{product.name}</h3>
+                     <p className="text-gray-600 mb-6 line-clamp-2 leading-relaxed">{product.description}</p>
+                     
+                     {/* Price and Minimum Lot */}
+                     <div className="space-y-3 mb-6">
+                       <div className="price-text text-xl font-black">
+                         ₹{product.price.toLocaleString('en-IN')}
+                       </div>
+                       {product.minimum_lot && product.minimum_lot > 1 && (
+                         <div className="flex items-center text-sm text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                           <ShoppingCart className="h-4 w-4 mr-1" />
+                           Minimum Order: {product.minimum_lot} units
+                         </div>
+                       )}
+                     </div>
+                     
+                     <div className="flex justify-end">
+                       <Button
+                         onClick={() => setSelectedProduct(product)}
+                         className="btn-visible py-2 px-6 shadow-lg"
+                       >
+                         View Details
+                       </Button>
+                     </div>
+                   </div>
+                 </CardContent>
+               </Card>
+             );
+           })}
+         </div>
+       </>
+       )}
+     </div>
+   );
+ };
