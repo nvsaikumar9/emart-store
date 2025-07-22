@@ -262,10 +262,10 @@ export const PublicStorefront = () => {
       
       <div className="text-center py-20 gradient-primary text-white rounded-3xl shadow-2xl">
         <h1 className="text-6xl font-black mb-6">
-          3D Product Showcase
+          GTraders | Collection
         </h1>
         <p className="text-2xl max-w-3xl mx-auto opacity-95 leading-relaxed">
-          Explore our products in stunning 3D detail. Rotate, zoom, and interact with each item for an immersive shopping experience.
+          Explore our unique collections. Shop the Latest from GTraders.
         </p>
       </div>
 
