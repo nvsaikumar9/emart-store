@@ -54,6 +54,7 @@ export type Database = {
           minimum_lot: number | null
           name: string
           price: number
+          product_code: string | null
           status: string
           updated_at: string
           vendor_id: string
@@ -65,6 +66,7 @@ export type Database = {
           minimum_lot?: number | null
           name: string
           price?: number
+          product_code?: string | null
           status?: string
           updated_at?: string
           vendor_id: string
@@ -76,6 +78,7 @@ export type Database = {
           minimum_lot?: number | null
           name?: string
           price?: number
+          product_code?: string | null
           status?: string
           updated_at?: string
           vendor_id?: string
@@ -134,7 +137,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_gtr_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
