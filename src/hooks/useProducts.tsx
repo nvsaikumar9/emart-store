@@ -5,6 +5,7 @@ import { useAuth } from '@/components/AuthProvider';
 
 export interface Product {
   id: string;
+  product_code: string;
   vendor_id: string;
   name: string;
   description?: string;
@@ -17,6 +18,7 @@ export interface Product {
 // Type assertions to work around the types sync issue
 type ProductRow = {
   id: string;
+  product_code: string;
   vendor_id: string;
   name: string;
   description: string | null;
@@ -82,6 +84,7 @@ export const useProducts = (showOnlyPublished = false) => {
 
       const formattedProducts: Product[] = (data as ProductRow[]).map(product => ({
         id: product.id,
+        product_code: product.product_code,
         vendor_id: product.vendor_id,
         name: product.name,
         description: product.description,

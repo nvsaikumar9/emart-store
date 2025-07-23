@@ -115,11 +115,11 @@ export const ProductManager = () => {
     }
   };
 
-  const copyProductId = (id: string) => {
-    navigator.clipboard.writeText(id);
+  const copyProductId = (code: string) => {
+    navigator.clipboard.writeText(code);
     toast({
       title: "Copied!",
-      description: "Product ID copied to clipboard.",
+      description: "Product code copied to clipboard.",
     });
   };
 
@@ -209,20 +209,20 @@ export const ProductManager = () => {
           </div>
         </div>
 
-        {/* Show Product ID if editing existing product */}
-        {editingProduct.id && (
+        {/* Show Product Code if editing existing product */}
+        {editingProduct.product_code && (
           <Card className="bg-blue-50 border-blue-200">
             <CardContent className="p-3 sm:p-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center space-x-2">
                   <Hash className="h-4 w-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-800">Product ID:</span>
-                  <span className="text-sm font-mono text-blue-900 break-all sm:break-normal">{editingProduct.id}</span>
+                  <span className="text-sm font-medium text-blue-800">Product Code:</span>
+                  <span className="text-sm font-mono text-blue-900 break-all sm:break-normal">{editingProduct.product_code}</span>
                 </div>
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => copyProductId(editingProduct.id!)}
+                  onClick={() => copyProductId(editingProduct.product_code!)}
                   className="text-blue-600 border-blue-300 hover:bg-blue-100 self-start sm:self-auto"
                 >
                   <Copy className="h-3 w-3 mr-1" />
@@ -497,16 +497,16 @@ export const ProductManager = () => {
                 />
               </div>
               <div className="p-3 sm:p-4">
-                {/* Product ID Display */}
+                {/* Product Code Display */}
                 <div className="flex items-center justify-between mb-2 p-2 bg-gray-50 rounded">
                   <div className="flex items-center space-x-1">
                     <Hash className="h-3 w-3 text-gray-500" />
-                    <span className="text-xs text-gray-600 font-mono">{product.id.slice(0, 8)}...</span>
+                    <span className="text-xs text-gray-600 font-mono">{product.product_code}</span>
                   </div>
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => copyProductId(product.id)}
+                    onClick={() => copyProductId(product.product_code)}
                     className="h-6 w-6 p-0"
                   >
                     <Copy className="h-3 w-3" />

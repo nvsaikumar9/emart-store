@@ -92,7 +92,7 @@ const Dashboard = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalStoreWorth.toLocaleString()}</div>
+            <div className="text-2xl font-bold">₹{totalStoreWorth.toLocaleString('en-IN')}</div>
             <p className="text-xs text-muted-foreground">
               Sum of all product prices
             </p>
@@ -162,7 +162,7 @@ const Dashboard = () => {
             <div className="flex justify-between items-center">
               <span className="text-sm text-gray-600">Average Product Price</span>
               <span className="text-sm font-semibold">
-                ${totalProducts > 0 ? Math.round(totalStoreWorth / totalProducts).toLocaleString() : 0}
+                ₹{totalProducts > 0 ? Math.round(totalStoreWorth / totalProducts).toLocaleString('en-IN') : 0}
               </span>
             </div>
           </CardContent>

@@ -60,11 +60,11 @@ export const PublicStorefront = () => {
     }
   };
 
-  const copyProductId = (id: string) => {
-    navigator.clipboard.writeText(id);
+  const copyProductId = (code: string) => {
+    navigator.clipboard.writeText(code);
     toast({
       title: "Copied!",
-      description: "Product ID copied to clipboard.",
+      description: "Product code copied to clipboard.",
     });
   };
 
@@ -102,19 +102,19 @@ export const PublicStorefront = () => {
             <Card className="gradient-card shadow-2xl">
               <CardContent className="p-8">
                 <div className="space-y-6">
-                  {/* Product ID Display */}
+                  {/* Product Code Display */}
                   <Card className="bg-blue-50 border-blue-200">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <Hash className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm font-medium text-blue-800">Product ID:</span>
-                          <span className="text-sm font-mono text-blue-900">{selectedProduct.id}</span>
+                          <span className="text-sm font-medium text-blue-800">Product Code:</span>
+                          <span className="text-sm font-mono text-blue-900">{selectedProduct.product_code}</span>
                         </div>
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => copyProductId(selectedProduct.id)}
+                          onClick={() => copyProductId(selectedProduct.product_code)}
                           className="text-blue-600 border-blue-300 hover:bg-blue-100"
                         >
                           <Copy className="h-3 w-3 mr-1" />
@@ -262,7 +262,7 @@ export const PublicStorefront = () => {
       
       <div className="text-center py-20 gradient-primary text-white rounded-3xl shadow-2xl">
         <h1 className="text-6xl font-black mb-6">
-          GTraders | Collection
+          Gtraders
         </h1>
         <p className="text-2xl max-w-3xl mx-auto opacity-95 leading-relaxed">
           Explore our unique collections. Shop the Latest from GTraders.
@@ -384,16 +384,16 @@ export const PublicStorefront = () => {
                   </div>
                   
                   <div className="p-8">
-                    {/* Product ID Display */}
+                    {/* Product Code Display */}
                     <div className="flex items-center justify-between mb-3 p-2 bg-gray-50 rounded">
                       <div className="flex items-center space-x-1">
                         <Hash className="h-3 w-3 text-gray-500" />
-                        <span className="text-xs text-gray-600 font-mono">{product.id.slice(0, 8)}...</span>
+                        <span className="text-xs text-gray-600 font-mono">{product.product_code}</span>
                       </div>
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => copyProductId(product.id)}
+                        onClick={() => copyProductId(product.product_code)}
                         className="h-6 w-6 p-0"
                       >
                         <Copy className="h-3 w-3" />
@@ -403,11 +403,8 @@ export const PublicStorefront = () => {
                      <h3 className="font-black text-2xl mb-4 text-gray-800">{product.name}</h3>
                      <p className="text-gray-600 mb-6 line-clamp-2 leading-relaxed">{product.description}</p>
                      
-                     {/* Price and Minimum Lot */}
+                     {/* Minimum Lot (if applicable) */}
                      <div className="space-y-3 mb-6">
-                       <div className="price-text text-xl font-black">
-                         ₹{product.price.toLocaleString('en-IN')}
-                       </div>
                        {product.minimum_lot && product.minimum_lot > 1 && (
                          <div className="flex items-center text-sm text-orange-600 bg-orange-50 px-2 py-1 rounded">
                            <ShoppingCart className="h-4 w-4 mr-1" />
@@ -416,10 +413,14 @@ export const PublicStorefront = () => {
                        )}
                      </div>
                      
-                     <div className="flex justify-end">
+                     {/* Price and Button Side by Side */}
+                     <div className="flex items-center justify-between gap-4 flex-wrap">
+                       <div className="price-text text-xl sm:text-2xl font-black flex-shrink-0">
+                         ₹{product.price.toLocaleString('en-IN')}
+                       </div>
                        <Button
                          onClick={() => setSelectedProduct(product)}
-                         className="btn-visible py-2 px-6 shadow-lg"
+                         className="btn-visible py-2 px-4 shadow-lg flex-shrink-0"
                        >
                          View Details
                        </Button>
