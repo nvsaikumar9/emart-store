@@ -33,7 +33,7 @@ const AppContent = () => {
         <div className="gradient-primary shadow-lg border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-14 sm:h-16">
-              <h1 className="text-lg sm:text-2xl font-black text-white">3D Product Showcase</h1>
+              <h1 className="text-lg sm:text-2xl font-black text-white">Gtraders</h1>
               <Button 
                 onClick={() => setShowStorefront(false)}
                 className="btn-outline-visible text-sm"
@@ -58,7 +58,7 @@ const AppContent = () => {
         <div className="gradient-primary shadow-lg border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 py-4 sm:py-0 sm:h-16">
-              <h1 className="text-lg sm:text-2xl font-black text-white text-center sm:text-left">3D Product Showcase</h1>
+              <h1 className="text-lg sm:text-2xl font-black text-white text-center sm:text-left">Gtraders</h1>
               <Button 
                 onClick={() => setShowStorefront(true)}
                 className="btn-outline-visible flex items-center justify-center space-x-2 text-sm"

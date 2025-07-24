@@ -24,7 +24,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab 
         <div className="flex justify-between h-16">
           <div className="flex items-center space-x-8">
             <h1 className="text-xl font-bold text-white">
-              3D Product Showcase
+              Gtraders
             </h1>
             <div className="flex space-x-4">
               {vendorTabs.map((tab) => {
