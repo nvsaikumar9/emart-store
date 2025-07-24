@@ -262,7 +262,7 @@ export const PublicStorefront = () => {
       
       <div className="text-center py-20 gradient-primary text-white rounded-3xl shadow-2xl">
         <h1 className="text-6xl font-black mb-6">
-          Gtraders
+          GTRADERS COLLECTION
         </h1>
         <p className="text-2xl max-w-3xl mx-auto opacity-95 leading-relaxed">
           Explore our unique collections. Shop the Latest from GTraders.
