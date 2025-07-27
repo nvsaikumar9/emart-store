@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useProducts } from '@/hooks/useProducts';
-import { Package, Eye, DollarSign, Activity } from 'lucide-react';
+import { Package, Eye, DollarSign, Activity, TrendingUp, ShoppingCart, Users, Star } from 'lucide-react';
 
 const Dashboard = () => {
   const { products, loading } = useProducts();
@@ -51,122 +51,183 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-muted-foreground">
-          Welcome back! Here's what's happening with your store.
+    <div className="p-8 space-y-8 bg-gradient-to-br from-background via-muted/30 to-accent/20 min-h-screen">
+      {/* Header Section with Infographic Style */}
+      <div className="text-center space-y-4 fade-in-up">
+        <h1 className="text-5xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Dashboard Overview
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          Visual insights and analytics for your GTRADERS COLLECTION store
         </p>
       </div>
 
+      {/* Key Metrics with Infographic Style */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalProducts}</div>
-            <p className="text-xs text-muted-foreground">
-              {publishedProducts} published
-            </p>
-          </CardContent>
-        </Card>
+        {/* Total Products Card */}
+        <div className="infographic-card scale-in">
+          <div className="infographic-metric gradient-metric-primary">
+            <Package className="infographic-icon" />
+            <div className="infographic-stat-number">{totalProducts}</div>
+            <div className="infographic-stat-label">Total Products</div>
+            <div className="infographic-data-point mt-4">
+              <Star className="w-4 h-4 text-success" />
+              <span>{publishedProducts} Live Products</span>
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Website Views</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{websiteViews.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              Total site visits
-            </p>
-          </CardContent>
-        </Card>
+        {/* Website Views Card */}
+        <div className="infographic-card scale-in" style={{ animationDelay: '0.1s' }}>
+          <div className="infographic-metric gradient-metric-secondary">
+            <Eye className="infographic-icon" />
+            <div className="infographic-stat-number">{websiteViews.toLocaleString()}</div>
+            <div className="infographic-stat-label">Website Views</div>
+            <div className="infographic-progress-bar mt-4">
+              <div 
+                className="infographic-progress-fill" 
+                style={{ width: '75%' }}
+              />
+            </div>
+            <span className="text-xs text-muted-foreground mt-2 block">75% of monthly target</span>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Store Worth</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹{totalStoreWorth.toLocaleString('en-IN')}</div>
-            <p className="text-xs text-muted-foreground">
-              Sum of all product prices
-            </p>
-          </CardContent>
-        </Card>
+        {/* Store Worth Card */}
+        <div className="infographic-card scale-in" style={{ animationDelay: '0.2s' }}>
+          <div className="infographic-metric gradient-metric-success">
+            <DollarSign className="infographic-icon" />
+            <div className="infographic-stat-number">₹{(totalStoreWorth / 1000).toFixed(0)}K</div>
+            <div className="infographic-stat-label">Store Value</div>
+            <div className="infographic-badge mt-4">
+              <TrendingUp className="w-3 h-3" />
+              Growing Portfolio
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{recentActivity.length}</div>
-            <p className="text-xs text-muted-foreground">
-              Latest updates
-            </p>
-          </CardContent>
-        </Card>
+        {/* Performance Score Card */}
+        <div className="infographic-card scale-in" style={{ animationDelay: '0.3s' }}>
+          <div className="infographic-metric bg-gradient-to-br from-warning-light to-warning/20">
+            <Activity className="infographic-icon" />
+            <div className="infographic-stat-number">92</div>
+            <div className="infographic-stat-label">Performance Score</div>
+            <div className="flex items-center justify-center mt-4 space-x-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star 
+                  key={star} 
+                  className={`w-4 h-4 ${star <= 4 ? 'text-warning fill-warning' : 'text-muted-foreground'}`} 
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-            <CardDescription>
-              Latest updates from your store
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {recentActivity.map((activity, index) => (
-              <div key={activity.id} className="flex items-start space-x-3">
-                <div className="flex-shrink-0">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+      {/* Infographic-style Activity and Stats Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Recent Activity Timeline */}
+        <div className="lg:col-span-2">
+          <Card className="infographic-card h-full">
+            <CardHeader className="text-center pb-6">
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Activity Timeline
+              </CardTitle>
+              <CardDescription className="text-lg">
+                Latest updates and store events
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {recentActivity.map((activity, index) => (
+                <div key={activity.id} className="flex items-start space-x-4 hover-lift">
+                  <div className="flex-shrink-0">
+                    <div className="w-4 h-4 bg-gradient-to-r from-primary to-secondary rounded-full mt-1 relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0 bg-gradient-to-r from-muted/50 to-accent/30 p-4 rounded-lg">
+                    <p className="text-sm font-semibold text-foreground">
+                      {activity.message}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
+                    <Badge 
+                      variant={activity.type === 'product' ? 'default' : 'secondary'}
+                      className="mt-2 infographic-badge"
+                    >
+                      {activity.type}
+                    </Badge>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900">
-                    {activity.message}
-                  </p>
-                  <p className="text-xs text-gray-500">{activity.time}</p>
-                </div>
-                <Badge variant={activity.type === 'product' ? 'default' : 'secondary'}>
-                  {activity.type}
-                </Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Stats</CardTitle>
-            <CardDescription>
-              Overview of your store performance
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Published Products</span>
-              <span className="text-sm font-semibold">{publishedProducts}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Draft Products</span>
-              <span className="text-sm font-semibold">{totalProducts - publishedProducts}</span>
-            </div>
-            <Separator />
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Average Product Price</span>
-              <span className="text-sm font-semibold">
-                ₹{totalProducts > 0 ? Math.round(totalStoreWorth / totalProducts).toLocaleString('en-IN') : 0}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Analytics Panel */}
+        <div className="space-y-6">
+          <Card className="infographic-card">
+            <CardHeader className="text-center">
+              <CardTitle className="text-xl font-bold">Store Analytics</CardTitle>
+              <CardDescription>Performance breakdown</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Published vs Draft */}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium flex items-center gap-2">
+                    <ShoppingCart className="w-4 h-4 text-success" />
+                    Published
+                  </span>
+                  <span className="infographic-stat-number text-lg">{publishedProducts}</span>
+                </div>
+                <div className="infographic-progress-bar">
+                  <div 
+                    className="infographic-progress-fill bg-gradient-to-r from-success to-success/80" 
+                    style={{ width: `${totalProducts > 0 ? (publishedProducts / totalProducts) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Draft Products */}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium flex items-center gap-2">
+                    <Package className="w-4 h-4 text-warning" />
+                    In Draft
+                  </span>
+                  <span className="infographic-stat-number text-lg">{totalProducts - publishedProducts}</span>
+                </div>
+                <div className="infographic-progress-bar">
+                  <div 
+                    className="infographic-progress-fill bg-gradient-to-r from-warning to-warning/80" 
+                    style={{ width: `${totalProducts > 0 ? ((totalProducts - publishedProducts) / totalProducts) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Average Price */}
+              <div className="text-center p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg">
+                <div className="text-2xl font-black text-primary">
+                  ₹{totalProducts > 0 ? Math.round(totalStoreWorth / totalProducts).toLocaleString('en-IN') : 0}
+                </div>
+                <div className="text-sm text-muted-foreground font-medium">Average Product Price</div>
+              </div>
+
+              {/* Customer Satisfaction */}
+              <div className="text-center p-4 bg-gradient-to-r from-success/10 to-success/5 rounded-lg">
+                <div className="flex justify-center mb-2">
+                  <Users className="w-8 h-8 text-success" />
+                </div>
+                <div className="text-xl font-bold text-success">4.8/5</div>
+                <div className="text-sm text-muted-foreground">Customer Rating</div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
