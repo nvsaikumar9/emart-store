@@ -7,107 +7,74 @@
 
 @layer base {
   :root {
-    /* Infographic Color Palette - Professional Blue & Orange */
-    --background: 0 0% 99%;
-    --foreground: 210 40% 15%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 40% 15%;
+    --card-foreground: 222.2 84% 4.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 40% 15%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    /* Primary: Professional Blue */
-    --primary: 210 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 210 100% 85%;
-    --primary-dark: 210 100% 35%;
+    --primary: 227 100% 50%;
+    --primary-foreground: 210 40% 98%;
 
-    /* Secondary: Warm Orange */
-    --secondary: 25 95% 60%;
-    --secondary-foreground: 0 0% 100%;
-    --secondary-light: 25 95% 85%;
-    --secondary-dark: 25 95% 45%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    /* Neutral Grays for clean infographic look */
-    --muted: 210 15% 96%;
-    --muted-foreground: 210 15% 45%;
-    --accent: 210 20% 92%;
-    --accent-foreground: 210 40% 20%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    /* Success Green */
-    --success: 142 76% 36%;
-    --success-foreground: 0 0% 100%;
-    --success-light: 142 76% 85%;
+    --accent: 37 91% 55%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
-    /* Warning Yellow */
-    --warning: 45 93% 47%;
-    --warning-foreground: 210 40% 15%;
-    --warning-light: 45 93% 85%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 210 20% 88%;
-    --input: 210 20% 94%;
-    --ring: 210 100% 50%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --sidebar-background: 210 15% 98%;
-    --sidebar-foreground: 210 40% 20%;
-    --sidebar-primary: 210 100% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 92%;
-    --sidebar-accent-foreground: 210 40% 20%;
-    --sidebar-border: 210 20% 88%;
-    --sidebar-ring: 210 100% 50%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 210 40% 8%;
-    --foreground: 210 15% 92%;
-    --card: 210 40% 10%;
-    --card-foreground: 210 15% 92%;
-    --popover: 210 40% 10%;
-    --popover-foreground: 210 15% 92%;
-    
-    --primary: 210 100% 55%;
-    --primary-foreground: 210 40% 8%;
-    --primary-light: 210 100% 25%;
-    --primary-dark: 210 100% 75%;
-    
-    --secondary: 25 95% 65%;
-    --secondary-foreground: 210 40% 8%;
-    --secondary-light: 25 95% 25%;
-    --secondary-dark: 25 95% 75%;
-    
-    --muted: 210 40% 15%;
-    --muted-foreground: 210 15% 65%;
-    --accent: 210 40% 18%;
-    --accent-foreground: 210 15% 88%;
-    
-    --success: 142 76% 45%;
-    --success-foreground: 210 40% 8%;
-    --success-light: 142 76% 25%;
-    
-    --warning: 45 93% 55%;
-    --warning-foreground: 210 40% 8%;
-    --warning-light: 45 93% 25%;
-    
-    --destructive: 0 84% 65%;
-    --destructive-foreground: 210 40% 8%;
-    --border: 210 40% 20%;
-    --input: 210 40% 18%;
-    --ring: 210 100% 55%;
-    
-    --sidebar-background: 210 40% 10%;
-    --sidebar-foreground: 210 15% 88%;
-    --sidebar-primary: 210 100% 55%;
-    --sidebar-primary-foreground: 210 40% 8%;
-    --sidebar-accent: 210 40% 18%;
-    --sidebar-accent-foreground: 210 15% 88%;
-    --sidebar-border: 210 40% 20%;
-    --sidebar-ring: 210 100% 55%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -117,43 +84,33 @@
   }
 
   body {
-    @apply bg-gradient-to-br from-background via-muted to-accent text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    @apply bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 text-foreground;
   }
 }
 
-/* Infographic-style gradients with professional color palette */
+/* Simplified, modern gradients with better contrast */
 .gradient-primary {
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary-dark)) 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%);
 }
 
 .gradient-secondary {
-  background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--secondary-dark)) 100%);
+  background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%);
 }
 
-.gradient-success {
-  background: linear-gradient(135deg, hsl(var(--success)) 0%, hsl(142 76% 30%) 100%);
+.gradient-yellow {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 50%, #a16207 100%);
 }
 
-.gradient-warning {
-  background: linear-gradient(135deg, hsl(var(--warning)) 0%, hsl(45 93% 40%) 100%);
+.gradient-orange {
+  background: linear-gradient(135deg, #ea580c 0%, #dc2626 50%, #b91c1c 100%);
 }
 
-/* Infographic data card gradients */
-.gradient-stat-card {
-  background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%);
+.gradient-purple {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
 }
 
-.gradient-metric-primary {
-  background: linear-gradient(135deg, hsl(var(--primary-light)) 0%, hsl(var(--primary)) 20%);
-}
-
-.gradient-metric-secondary {
-  background: linear-gradient(135deg, hsl(var(--secondary-light)) 0%, hsl(var(--secondary)) 20%);
-}
-
-.gradient-metric-success {
-  background: linear-gradient(135deg, hsl(var(--success-light)) 0%, hsl(var(--success)) 20%);
+.gradient-pink {
+  background: linear-gradient(135deg, #db2777 0%, #be185d 50%, #9d174d 100%);
 }
 
 /* Fixed price visibility with better contrast */
@@ -233,94 +190,4 @@
   color: #ffffff !important;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-/* Infographic-style animations and micro-interactions */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes countUp {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* Infographic utility classes */
-.infographic-card {
-  @apply bg-gradient-to-br from-card to-accent/20 border border-border/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1;
-}
-
-.infographic-metric {
-  @apply text-center p-6 rounded-xl transition-all duration-300 hover:scale-105;
-}
-
-.infographic-stat-number {
-  @apply text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
-  animation: countUp 0.6s ease-out;
-}
-
-.infographic-stat-label {
-  @apply text-sm font-semibold text-muted-foreground uppercase tracking-wider mt-2;
-}
-
-.infographic-icon {
-  @apply w-12 h-12 mx-auto mb-4 p-2 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 text-primary;
-}
-
-.infographic-progress-bar {
-  @apply h-2 bg-muted rounded-full overflow-hidden;
-}
-
-.infographic-progress-fill {
-  @apply h-full bg-gradient-to-r from-primary to-secondary transition-all duration-1000 ease-out;
-}
-
-.infographic-badge {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-primary/10 to-secondary/10 text-primary border border-primary/20;
-}
-
-.infographic-data-point {
-  @apply inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-muted to-accent rounded-lg text-sm font-medium;
-}
-
-/* Hover effects for interactive elements */
-.hover-lift {
-  @apply transition-all duration-200 hover:-translate-y-1 hover:shadow-lg;
-}
-
-.hover-glow {
-  @apply transition-all duration-300 hover:shadow-lg hover:shadow-primary/25;
-}
-
-/* Responsive animations */
-.fade-in-up {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.scale-in {
-  animation: scaleIn 0.4s ease-out;
 }

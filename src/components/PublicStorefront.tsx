@@ -7,7 +7,7 @@ import { ProductViewer3D } from './ProductViewer3D';
 import { ImagePreloader } from './ImagePreloader';
 import { useProducts, Product } from '@/hooks/useProducts';
 import { useVendor } from '@/hooks/useVendor';
-import { Eye, Phone, MapPin, Globe, User, Building, Hash, Copy, ShoppingCart, Search, Filter, X, Package, Star, TrendingUp } from 'lucide-react';
+import { Eye, Phone, MapPin, Globe, User, Building, Hash, Copy, ShoppingCart, Search, Filter, X } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 export const PublicStorefront = () => {
@@ -260,40 +260,13 @@ export const PublicStorefront = () => {
       {/* Preload all product images for instant display */}
       <ImagePreloader images={allImages} priority={true} />
       
-      {/* Infographic-style Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary via-primary-dark to-secondary text-white rounded-3xl shadow-2xl">
-        <div className="absolute inset-0 opacity-20">
-          <div className="w-full h-full bg-white/5 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:60px_60px]"></div>
-        </div>
-        <div className="relative z-10 text-center py-24 px-8">
-          <div className="fade-in-up">
-            <h1 className="text-7xl font-black mb-8 bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
-              GTRADERS COLLECTION
-            </h1>
-            <p className="text-2xl max-w-4xl mx-auto mb-12 opacity-95 leading-relaxed">
-              Discover premium products with cutting-edge 3D visualization technology
-            </p>
-            
-            {/* Infographic Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mt-16">
-              <div className="infographic-metric bg-white/10 backdrop-blur-sm">
-                <Package className="w-8 h-8 mx-auto mb-3 text-white" />
-                <div className="text-3xl font-black text-white">{products.length}+</div>
-                <div className="text-sm text-white/80 uppercase tracking-wider">Products</div>
-              </div>
-              <div className="infographic-metric bg-white/10 backdrop-blur-sm">
-                <Eye className="w-8 h-8 mx-auto mb-3 text-white" />
-                <div className="text-3xl font-black text-white">360°</div>
-                <div className="text-sm text-white/80 uppercase tracking-wider">3D Viewing</div>
-              </div>
-              <div className="infographic-metric bg-white/10 backdrop-blur-sm">
-                <Star className="w-8 h-8 mx-auto mb-3 text-white" />
-                <div className="text-3xl font-black text-white">4.9/5</div>
-                <div className="text-sm text-white/80 uppercase tracking-wider">Rating</div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="text-center py-20 gradient-primary text-white rounded-3xl shadow-2xl">
+        <h1 className="text-6xl font-black mb-6">
+          GTRADERS COLLECTION
+        </h1>
+        <p className="text-2xl max-w-3xl mx-auto opacity-95 leading-relaxed">
+          Explore our unique collections. Shop the Latest from GTraders.
+        </p>
       </div>
 
       {products.length === 0 ? (
@@ -410,68 +383,49 @@ export const PublicStorefront = () => {
                     </div>
                   </div>
                   
-                   <div className="p-6 space-y-4">
-                     {/* Infographic Product Header */}
-                     <div className="flex items-center justify-between mb-4">
-                       <div className="infographic-badge">
-                         <Hash className="w-3 h-3" />
-                         <span className="text-xs font-mono">#{product.product_code}</span>
+                  <div className="p-8">
+                    {/* Product Code Display */}
+                    <div className="flex items-center justify-between mb-3 p-2 bg-gray-50 rounded">
+                      <div className="flex items-center space-x-1">
+                        <Hash className="h-3 w-3 text-gray-500" />
+                        <span className="text-xs text-gray-600 font-mono">{product.product_code}</span>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => copyProductId(product.product_code)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+
+                     <h3 className="font-black text-2xl mb-4 text-gray-800">{product.name}</h3>
+                     <p className="text-gray-600 mb-6 line-clamp-2 leading-relaxed">{product.description}</p>
+                     
+                     {/* Minimum Lot (if applicable) */}
+                     <div className="space-y-3 mb-6">
+                       {product.minimum_lot && product.minimum_lot > 1 && (
+                         <div className="flex items-center text-sm text-orange-600 bg-orange-50 px-2 py-1 rounded">
+                           <ShoppingCart className="h-4 w-4 mr-1" />
+                           Minimum Order: {product.minimum_lot} units
+                         </div>
+                       )}
+                     </div>
+                     
+                     {/* Price and Button Side by Side */}
+                     <div className="flex items-center justify-between gap-4 flex-wrap">
+                       <div className="price-text text-xl sm:text-2xl font-black flex-shrink-0">
+                         ₹{product.price.toLocaleString('en-IN')}
                        </div>
                        <Button
-                         size="sm"
-                         variant="ghost"
-                         onClick={() => copyProductId(product.product_code)}
-                         className="infographic-data-point h-8 px-3"
+                         onClick={() => setSelectedProduct(product)}
+                         className="btn-visible py-2 px-4 shadow-lg flex-shrink-0"
                        >
-                         <Copy className="h-3 w-3 mr-1" />
-                         Copy
+                         View Details
                        </Button>
                      </div>
-
-                      {/* Product Title */}
-                      <h3 className="text-xl font-black bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent mb-3">
-                        {product.name}
-                      </h3>
-                      
-                      {/* Description with better typography */}
-                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-4">
-                        {product.description}
-                      </p>
-                      
-                      {/* Infographic Data Points */}
-                      <div className="flex items-center gap-2 mb-6">
-                        {product.minimum_lot && product.minimum_lot > 1 && (
-                          <div className="infographic-data-point">
-                            <Package className="w-3 h-3" />
-                            <span className="text-xs">Min: {product.minimum_lot}</span>
-                          </div>
-                        )}
-                        <div className="infographic-badge">
-                          <Star className="w-3 h-3" />
-                          <span className="text-xs">Premium</span>
-                        </div>
-                        <div className="infographic-data-point">
-                          <TrendingUp className="w-3 h-3" />
-                          <span className="text-xs">Best Value</span>
-                        </div>
-                      </div>
-                      
-                      {/* Enhanced Price and CTA Section */}
-                      <div className="flex items-center justify-between gap-4 pt-4 border-t border-border/50">
-                        <div className="text-center">
-                          <div className="text-2xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                            ₹{product.price.toLocaleString('en-IN')}
-                          </div>
-                          <div className="text-xs text-muted-foreground font-medium">Best Price</div>
-                        </div>
-                        <Button
-                          onClick={() => setSelectedProduct(product)}
-                          className="bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white font-semibold px-6 py-2 rounded-lg hover-lift hover-glow transition-all duration-200"
-                        >
-                          View Details
-                        </Button>
-                      </div>
-                    </div>
+                   </div>
                  </CardContent>
                </Card>
              );
